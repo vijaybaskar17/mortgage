@@ -16,7 +16,7 @@ var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
     channel_id: 'mychannel',
-    chaincode_id: 'fabcar',
+    chaincode_id: 'mortgage',
     peer_url: 'grpc://localhost:7051',
     event_url: 'grpc://localhost:7053',
     orderer_url: 'grpc://localhost:7050'
@@ -55,7 +55,7 @@ Promise.resolve().then(() => {
         targets: targets,
         chaincodeId: options.chaincode_id,
         fcn: 'createCar',
-        args: ['CAR10', 'Chevy', 'Volt', 'Red', 'Nick'],
+        args: ['CAR11', 'swift', 'Volt', 'black', 'jaya'],
         chainId: options.channel_id,
         txId: tx_id
     };
