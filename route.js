@@ -79,15 +79,15 @@ router.post('/creditscore', cors(), (req, res1) => {
         } else {
 
             registerUser
-                .registerUser(email, password, usertype,firstname,lastname,dateofbirth,gender,age,phonenumber )
+                .registerUser(email, password, usertype,firstname,lastname,dateofbirth,gender,age,phonenumber)
                 .then(result => {
 
-                   return res
+                   res
                         .status(result.status)
                         .json({
                             message: result.message,
-                            email: email,
-                            phone: phonetosend
+                            email: email
+                           
                         });
 
                 })
