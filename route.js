@@ -3,7 +3,7 @@
 const creditscore = require('./functions/creditscore');
 const login = require('./functions/login');
 const registerUser = require('./functions/registerUser');
-const loandetails = require('./functions/loandetails');
+const loan = require('./functions/loan');
 var cors = require('cors');
 var mongoose = require('mongoose');
 
@@ -56,19 +56,19 @@ router.post('/creditscore', cors(), (req, res1) => {
         console.log(firstname);
         const lastname = req.body.lastname;
         console.log(lastname);
-        const dateofbirth = parseInt(req.body.dateofbirth);
+        const dateofbirth = req.body.dateofbirth;
         console.log(dateofbirth);
         const gender = req.body.gender;
         console.log(gender);
-        const age =parseInt(req.body.age);
-        console.log(age);
+        // const age =parseInt(req.body.age);
+        // console.log(age);
         const phonenumber =parseInt(req.body.phonenumber);
         console.log(phonenumber);
-        const usertype = req.body.usertype;
-        console.log(usertype);
+        const retypepassword = req.body.retypepassword;
+        console.log(retypepassword);
 
         
-        if (!email || !password || !firstname || !lastname || !dateofbirth || !gender || !age || !phonenumber || !usertype) {
+        if (!email || !password || !firstname || !lastname || !dateofbirth || !gender || !phonenumber || !retypepassword) {
 
             res
                 .status(400)
@@ -79,7 +79,7 @@ router.post('/creditscore', cors(), (req, res1) => {
         } else {
 
             registerUser
-                .registerUser(email, password, usertype,firstname,lastname,dateofbirth,gender,age,phonenumber)
+                .registerUser(email,password,retypepassword,firstname,lastname,dateofbirth,gender,phonenumber)
                 .then(result => {
 
                    res
@@ -191,15 +191,29 @@ router.get('/images/id', cors(), (req, res) => {
 
 router.post('/loandetails', cors(), (req, res) => {
     
-            const id = req.body.userid;
+            const id = req.body.transactionstring.userid;
             console.log(id);
-            const _id=(req.body.transactionstring._id).tostring()
-            var transaction = req.body.transactionstring;
-            console.log(transaction)
-            var loan = transaction.loandetails;
+            var loandetails = req.body.transactionstring.loandetails;
+            console.log(loandetails)
+            loan
+            .loandetails(id,loandetails)
+            .then(result => {
+                
+                
+                        res.status(result.status).json({
+                            message:" loan details entered successfully"
+                        
+                
+                        });
+                
+                    })
+                    .catch(err => res.status(err.status).json({
+                        message: err.message
+                    }).json({
+                        status: err.status
+                    }));
     
     });
-
     
 }
 

@@ -3,19 +3,19 @@
 
 const user = require('../models/registerpage');
 
-exports.registerUser = (email, password, usertype,firstname,lastname,dateofbirth,gender,age,phonenumber) => new Promise((resolve, reject) => {
+exports.registerUser = (email, password, retypepassword,firstname,lastname,dateofbirth,gender,phonenumber) => new Promise((resolve, reject) => {
 
     const newUser = new user({
 
         email: email,
         password: password,
+        retypepassword:retypepassword,
         firstname: firstname,
         lastname:lastname,
-        gender:gender,
-        age:age,
-        phonenumber:phonenumber,
-        usertype: usertype,
         dateofbirth: dateofbirth,
+        gender:gender,
+        phonenumber:phonenumber,
+       
     });
     newUser
         .save()

@@ -12,8 +12,8 @@ return new Promise((resolve, reject) => {
 
     const newloanpage = new loanpage({
 
-            userid: String,
-            loanObject:loan
+            userid: userid,
+            loanObject:loan,
         
     });
     newloanpage

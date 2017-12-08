@@ -23,7 +23,7 @@ exports.loginUser = (email, password) =>
 
                     resolve({
                         status: 200,
-                        message: emailid,
+                        
                         users: users[0]
                     });
 
