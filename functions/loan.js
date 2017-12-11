@@ -4,16 +4,20 @@ const  loanpage = require('../models/loandetails');
 
 
 
-exports.loandetails = (userid,loan) => {
+exports.loandetails = (loan) => {
     
-
-
-return new Promise((resolve, reject) => {
+return new Promise((resolve, reject) => { 
+    var requestid    = "";
+    var possible= "0123456789"
+    for (var i=0; i<3;i++)
+    requestid += possible.charAt(Math.floor(Math.random() * possible.length));
+    console.log("requestid"+requestid)
 
     const newloanpage = new loanpage({
 
-            userid: userid,
-            loanObject:loan,
+           // userid: userid,
+            loanobject:loan,
+            requestid: requestid
         
     });
     newloanpage

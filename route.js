@@ -4,6 +4,8 @@ const creditscore = require('./functions/creditscore');
 const login = require('./functions/login');
 const registerUser = require('./functions/registerUser');
 const loan = require('./functions/loan');
+const getloandetails = require('./functions/getloandetails');
+const getparticulardetails = require('./functions/getparticulardetails');
 var cors = require('cors');
 var mongoose = require('mongoose');
 
@@ -14,6 +16,8 @@ var multipartMiddleware = multipart();
 
 var Photo = require('./models/document');
 var path = require('path');
+
+const savetransaction = require('./functions/savetransaction');
 
 module.exports = router => {
     
@@ -44,7 +48,7 @@ router.post('/creditscore', cors(), (req, res1) => {
 });
 
 
-    router.post('/registeruser', cors(), (req, res) => {
+    router.post('/registerUser', cors(), (req, res) => {
 
         const email = req.body.email;
         console.log(email);
@@ -58,8 +62,8 @@ router.post('/creditscore', cors(), (req, res1) => {
         console.log(lastname);
         const dateofbirth = req.body.dateofbirth;
         console.log(dateofbirth);
-        const gender = req.body.gender;
-        console.log(gender);
+        //const gender = req.body.gender;
+        //console.log(gender);
         // const age =parseInt(req.body.age);
         // console.log(age);
         const phonenumber =parseInt(req.body.phonenumber);
@@ -68,7 +72,7 @@ router.post('/creditscore', cors(), (req, res1) => {
         console.log(retypepassword);
 
         
-        if (!email || !password || !firstname || !lastname || !dateofbirth || !gender || !phonenumber || !retypepassword) {
+        if (!email || !password || !firstname || !lastname || !dateofbirth  || !phonenumber || !retypepassword) {
 
             res
                 .status(400)
@@ -79,7 +83,7 @@ router.post('/creditscore', cors(), (req, res1) => {
         } else {
 
             registerUser
-                .registerUser(email,password,retypepassword,firstname,lastname,dateofbirth,gender,phonenumber)
+                .registerUser(email,password,retypepassword,firstname,lastname,dateofbirth,phonenumber)
                 .then(result => {
 
                    res
@@ -191,12 +195,14 @@ router.get('/images/id', cors(), (req, res) => {
 
 router.post('/loandetails', cors(), (req, res) => {
     
-            const id = req.body.transactionstring.userid;
-            console.log(id);
+            //const id = req.body.transactionstring.userid;
+            //console.log(id);
             var loandetails = req.body.transactionstring.loandetails;
             console.log(loandetails)
+            var transactionstring = transactionstring.stringfy(object);
+            
             loan
-            .loandetails(id,loandetails)
+            .loandetails(loandetails)
             .then(result => {
                 
                 
@@ -213,7 +219,48 @@ router.post('/loandetails', cors(), (req, res) => {
                         status: err.status
                     }));
     
-    });
+    }); 
+
+    router.get('/getloandetails', cors(), (req, res) => {
+
+
+                getloandetails
+                .getloandetails()
+                .then(function(result) {
+                    console.log(result)
+
+                    res.send({
+                        status: result.status,
+                        message: result.usr
+                    });
+                })
+                .catch(err => res.status(err.status).json({
+                    message: err.message
+                }));
+        
+
+    }); 
+
+    router.post('/getparticulardetails', cors(), (req, res) => {
+
+        console.log(req.body.requestid);
+        var requestid = req.body.requestid;
+                        getparticulardetails
+                         .getparticulardetails(requestid)
+                         .then(function(result) {
+                   console.log(result)
+        
+                             res.send({
+                                status: result.status,
+                                message: result.usr
+                            });
+                        })
+                        .catch(err => res.status(err.status).json({
+                         message: err.message
+                         }));
+                
+        
+             });
     
 }
 

@@ -3,7 +3,7 @@
 
 const user = require('../models/registerpage');
 
-exports.registerUser = (email, password, retypepassword,firstname,lastname,dateofbirth,gender,phonenumber) => new Promise((resolve, reject) => {
+exports.registerUser = (email, password, retypepassword,firstname,lastname,dateofbirth,phonenumber) => new Promise((resolve, reject) => {
 
     const newUser = new user({
 
@@ -13,7 +13,7 @@ exports.registerUser = (email, password, retypepassword,firstname,lastname,dateo
         firstname: firstname,
         lastname:lastname,
         dateofbirth: dateofbirth,
-        gender:gender,
+        //gender:gender,
         phonenumber:phonenumber,
        
     });

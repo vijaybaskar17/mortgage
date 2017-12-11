@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
 
 const loanpageSchema = mongoose.Schema({
     
-    userid: String,
+   // userid: String,
+    requestid: Number,
     loanobject : Object
 });
 
