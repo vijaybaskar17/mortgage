@@ -86,13 +86,13 @@ router.post('/creditscore', cors(), (req, res1) => {
                 .registerUser(email,password,retypepassword,firstname,lastname,dateofbirth,phonenumber)
                 .then(result => {
 
-                   res
-                        .status(result.status)
-                        .json({
-                            message: result.message,
-                            email: email
-                           
-                        });
+                    res.send({
+                        "message": "user has been registered successfully",
+                        "status": true,
+                    
+            
+                    });
+            
 
                 })
                 .catch(err => res.status(err.status).json({
@@ -109,13 +109,15 @@ router.post('/login', cors(), (req, res) => {
     console.log(emailid);
     const passwordid = req.body.password;
     console.log(passwordid);
+    
     login
     .loginUser(emailid, passwordid)
     .then(result => {
 
 
-        res.status(result.status).json({
-            message:" Login succeess"
+        res.send({
+            "message": "Login Successful",
+            "status": true,
         
 
         });
@@ -193,26 +195,35 @@ router.get('/images/id', cors(), (req, res) => {
 
 });  
 
+
+
+
 router.post('/loandetails', cors(), (req, res) => {
     
-            //const id = req.body.transactionstring.userid;
-            //console.log(id);
-            var loandetails = req.body.transactionstring.loandetails;
-            console.log(loandetails)
-            var transactionstring = transactionstring.stringfy(object);
+            // const requestid = req.body.requestid;
+            // console.log("line number 203----->",requestid);
+            var requestid    = "";
+            var possible= "0123456789674736728367382772898366377267489457636736273448732432642326734"
+            for (var i=0; i<3;i++)
+            requestid += possible.charAt(Math.floor(Math.random() * possible.length));
+            console.log("requestid"+requestid)
+            var transactionstring  = req.body.transactionstring;
+            console.log(transactionstring)
+           
             
-            loan
-            .loandetails(loandetails)
+            loan.loandetails(requestid,transactionstring)
+
             .then(result => {
+                console.log(result);
+                res.send({
+                    "message": "loan details entered successfully",
+                    "requestid":requestid,
+                    "status": true,
                 
-                
-                        res.status(result.status).json({
-                            message:" loan details entered successfully"
-                        
-                
-                        });
-                
+        
+                });
                     })
+                    
                     .catch(err => res.status(err.status).json({
                         message: err.message
                     }).json({
@@ -221,25 +232,46 @@ router.post('/loandetails', cors(), (req, res) => {
     
     }); 
 
-    router.get('/getloandetails', cors(), (req, res) => {
+    router.post('/getloandetails', cors(), (req, res) => {
+        var email = req.body.email;
+        var password = req.body.password;
+        console.log(JSON.stringify(req.body));
+        console.log(email);
+        if (email == "man@admin.com") {
+            console.log("yes");
+            getloandetails
+            .getloandetails(email)
+            .then(function(result) {
+                console.log(result)
+
+                res.send({
+                    status: result.status,
+                    message: result.usr
+                });
+            })
+            .catch(err => res.status(err.status).json({
+                message: err.message
+            }));
+    
+
+            
+            res.send({
+                "message": "Login Successful",
+                "status": true,
+            })
+        }  else {
+
+            console.log("no");
+            res.send({
+                "message": "email is not valid",
+                "status": true,
+            })
+        }    
 
 
-                getloandetails
-                .getloandetails()
-                .then(function(result) {
-                    console.log(result)
-
-                    res.send({
-                        status: result.status,
-                        message: result.usr
-                    });
-                })
-                .catch(err => res.status(err.status).json({
-                    message: err.message
-                }));
-        
-
+               
     }); 
+
 
     router.post('/getparticulardetails', cors(), (req, res) => {
 
@@ -261,6 +293,63 @@ router.post('/loandetails', cors(), (req, res) => {
                 
         
              });
-    
+             router.post('/savetransaction', cors(), (req, res) => {
+                 var name = req.body.name;
+                var transactionstring = JSON.stringfy(req.body.transactionstring);
+                var requestid = req.body.requestid;
+                
+                                        savetransaction
+                                         .savetransaction(name,transactionstring,requestid)
+                                         .then(function(result) {
+                                   console.log(result)
+                        
+                                             res.send({
+                                                
+                                                message: "entered successfully"
+                                            });
+                                        })
+                                        .catch(err => res.status(err.status).json({
+                                         message: err.message
+                                         }));
+                                
+                        
+                             });
+                             
+
+                             router.post('/approveloan', cors(), (req, res) => {
+                                const id = req.body.requestid;
+                                console.log(id);
+                                
+                                if (!id) {
+                                    // the if statement checks if any of the above paramenters are null or not..if
+                                    // is the it sends an error report.
+                                    res
+                                        .status(400)
+                                        .json({
+                                            message: 'Invalid Request !'
+                                        });
+                            
+                                } else {
+                                    approveloan
+                                        .approveloan(id)
+                                        .then(result => {
+                            
+                                            res
+                                                .status(result.status)
+                                                .json({
+                                                    status: result.status,
+                                                    message: result.message
+                                                })
+                                        })
+                                        .catch(err => res.status(err.status).json({
+                                            message: err.message
+                                        }));
+                                }
+                            
+                            });
+                            
+        
+        
 }
+
 

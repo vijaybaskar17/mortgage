@@ -1,28 +1,25 @@
 'use strict';
 
 const  loanpage = require('../models/loandetails');
+//const user = require('../models/fetchdata');
 
 
 
-exports.loandetails = (loan) => {
+exports.loandetails = (requestid,loan) => {
     
 return new Promise((resolve, reject) => { 
-    var requestid    = "";
-    var possible= "0123456789"
-    for (var i=0; i<3;i++)
-    requestid += possible.charAt(Math.floor(Math.random() * possible.length));
-    console.log("requestid"+requestid)
+   
 
     const newloanpage = new loanpage({
 
            // userid: userid,
-            loanobject:loan,
-            requestid: requestid
+           requestid: requestid,
+           loanobject:loan
+            
         
     });
-    newloanpage
-        .save()
-        .then(() => resolve({status: 201, message: 'loan application created'}))
+    newloanpage.save()
+        .then((result) => resolve({status: 201, message: 'success'}))
         .catch(err => {
 
             if (err.code == 11000) {

@@ -2,7 +2,9 @@
 
 const user = require('../models/loandetails');
 
-exports.getloandetails = () => {
+//const user = require('../models/fetchdata');
+
+exports.getloandetails = (email) => {
 
     return new Promise((resolve, reject) => {
 

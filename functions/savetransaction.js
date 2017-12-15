@@ -5,7 +5,7 @@ var bcSdk = require('../fabcar/invoke.js');
 
 exports.savetransaction = (name,transactionString,requestid) => new Promise((resolve, reject) => {
     const transactiondetails = ({
-        name:name,
+       // name:name,
         transactionString: transactionString,
         requestid: requestid
         

@@ -1,4 +1,5 @@
 const user = require('../models/loandetails');
+//const user = require('../models/fetchdata');
 
 exports.getparticulardetails = (requestid) => {
 

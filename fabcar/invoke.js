@@ -15,7 +15,7 @@ var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
     channel_id: 'mychannel',
-    chaincode_id: 'mortgage',
+    chaincode_id: 'mortgageprocessing',
     peer_url: 'grpc://localhost:7051',
     event_url: 'grpc://localhost:7053',
     orderer_url: 'grpc://localhost:7050'
@@ -66,7 +66,7 @@ function savetransaction(params) {
                 fcn: 'newRequest',
                 args: [
                    
-                    TransactionDetails.name,
+                   // TransactionDetails.name,
                     TransactionDetails.transactionString,
                     TransactionDetails.requestid
                     
@@ -206,7 +206,7 @@ function updatetransaction(params) {
                 fcn: 'updateRequest',
                 args: [
                    
-                    TransactionDetails.name,
+                   // TransactionDetails.name,
                     TransactionDetails.transactionString,
                     TransactionDetails.requestid
                     
