@@ -5,7 +5,7 @@ const  loanpage = require('../models/loandetails');
 
 
 
-exports.loandetails = (requestid,loan) => {
+exports.loandetails = (requestid,transactionstring) => {
     
 return new Promise((resolve, reject) => { 
    
@@ -14,7 +14,7 @@ return new Promise((resolve, reject) => {
 
            // userid: userid,
            requestid: requestid,
-           loanobject:loan
+           transactionstring:transactionstring
             
         
     });

@@ -1,25 +1,32 @@
 'use strict';
 // const bc_client = require('../blockchain_sample_client'); const bcrypt =
 // require('bcryptjs');
-var bcSdk = require('../fabcar/invoke.js');
+var bcSdk = require('../fabcar/invoke');
+const  loanpage = require('../models/loandetails');
 
-exports.savetransaction = (name,transactionString,requestid) => new Promise((resolve, reject) => {
-    const transactiondetails = ({
-       // name:name,
-        transactionString: transactionString,
-        requestid: requestid
+exports.savetransaction = (requestid,transactionstring) => {
+    return new Promise((resolve, reject) => {
+
+    const newloanpage =new loanpage ({
+     
+       requestid: requestid,
+       transactionstring: transactionstring
+        
         
    });
-    console.log("ENTERING THE CORE MODULE");
-    bcSdk
-        .savetransaction({
-            
-           TransactionDetails: transactiondetails
-        })
-        .then(() => resolve({
-            status: 201,
-            message: 'Policy Issued Sucessfully !'
-        }))
+
+   newloanpage.save()
+   
+   
+   
+
+   .then(() => resolve({
+    status: 201,
+    message: 'your loan details entered successfully !'
+}))
+
+.then(() => bcSdk.savetransaction({ TransactionDetails: newloanpage})
+)
         .catch(err => {
             if (err.code == 11000) {
                 reject({
@@ -35,3 +42,4 @@ exports.savetransaction = (name,transactionString,requestid) => new Promise((res
             }
         });
 });
+}
