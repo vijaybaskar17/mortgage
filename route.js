@@ -7,6 +7,10 @@ const loan = require('./functions/loan');
 const getloandetails = require('./functions/getloandetails');
 const getparticulardetails = require('./functions/getparticulardetails');
 const readRequest = require('./functions/readRequest');
+const preclosing = require('./functions/preclosing');
+const loanschedule = require('./functions/loanschedule');
+const getloanschedule = require('./functions/getloanschedule');
+
 var cors = require('cors');
 var mongoose = require('mongoose');
 
@@ -22,7 +26,7 @@ const savetransaction = require('./functions/savetransaction');
 
 module.exports = router => {
 
-    router.post('/creditscore', cors(), (req, res1) => {
+    router.post('/creditscore', cors(), (req, res) => {
 
         console.log("entering register function in functions ");
         const requestid = parseInt(req.body.requestid);
@@ -138,7 +142,7 @@ module.exports = router => {
     });
 
     router.post('/UploadDocs', multipartMiddleware, function(req, res, next) {
-        const id = req.headers['userid'];
+        const id = req.headers['requestid'];
         console.log(id)
         var photo = new Photo(req.body);
         console.log("req.files.image" + JSON.stringify(req.files));
@@ -175,11 +179,11 @@ module.exports = router => {
     });
 
     router.get('/images/id', cors(), (req, res) => {
-        const id = req.body.userid
+        const id = req.body.requestid
         console.log("id" + id);
         Photo
             .find({
-                "userid": id
+                "requestid": id
             })
             .then((images) => {
                 var image = [];
@@ -236,17 +240,17 @@ module.exports = router => {
 
     });
 
-    router.post('/getloandetails', cors(), (req, res) => {
+    router.get('/getloandetails', cors(), (req, res) => {
         var email = req.body.email;
         var password = req.body.password;
         console.log(JSON.stringify(req.body));
-        console.log(email);
-        if (email == "man@admin.com") {
-            console.log("yes");
+        console.log(email); 
+     /*  if (email == "man@admin.com") {
+            console.log("yes"); */
             getloandetails
-                .getloandetails(email)
+                .getloandetails()
                 .then(function(result) {
-                    console.log(result)
+                    console.log("result---",result)
 
                     res.send({
                         status: result.status,
@@ -256,22 +260,6 @@ module.exports = router => {
                 .catch(err => res.status(err.status).json({
                     message: err.message
                 }));
-
-
-
-            res.send({
-                "message": "Login Successful",
-                "status": true,
-            })
-        } else {
-
-            console.log("no");
-            res.send({
-                "message": "email is not valid",
-                "status": true,
-            })
-        }
-
 
 
     });
@@ -382,6 +370,120 @@ module.exports = router => {
             });
         }
     });
+
+    router.post('/preclosingUser', cors(), (req, res) => {
+
+                const requestid = req.body.requestid;
+                console.log(requestid);
+
+                const emiremaining = req.body.emiremaining;
+                console.log(emiremaining);
+        
+                const penaltyforclosure = req.body.penaltyforclosure;
+                console.log("penalty",penaltyforclosure);
+        
+                const installmentpermonth = req.body.installmentpermonth;
+                console.log(installmentpermonth);
+                const documentrequiredforclosing = req.body.documentrequiredforclosing;
+                console.log(documentrequiredforclosing);
+                const paymentmode = req.body.paymentmode;
+                console.log(paymentmode);
+        
+                if (!requestid||!emiremaining || !penaltyforclosure || !installmentpermonth || !documentrequiredforclosing || !paymentmode) {
+        
+                    res
+                        .status(400)
+                        .json({
+                            message: 'Invalid Request !'
+                        });
+        
+                } else {
+        
+                    preclosing
+                        .preclosingUser(requestid,emiremaining,penaltyforclosure,installmentpermonth,documentrequiredforclosing,paymentmode)
+                        .then(result => {
+        
+                            res.send({
+                                "message": "preclosing request accepted",
+                                "status": true,
+        
+                            });
+        
+        
+                        })
+                        .catch(err => res.status(err.status).json({
+                            message: err.message
+                        }))
+                }
+            });
+
+            router.post('/loanscheduleUser', cors(), (req, res) => {
+
+                const requestid = req.body.requestid;
+                console.log(requestid);
+                
+                        const loanamount = req.body.loanamount;
+                        console.log(loanamount);
+                
+                        const loanterms = req.body.loanterms;
+                        console.log("loan",loanterms);
+                
+                        const amountinterestrate = req.body.amountinterestrate;
+                        console.log(amountinterestrate);
+                        const paymentperyear = req.body.paymentperyear;
+                        console.log(paymentperyear);
+                        const installmentpermonth = req.body.installmentpermonth;
+                        console.log(installmentpermonth);
+                
+                        if (!requestid||! loanamount|| !loanterms || !amountinterestrate || !paymentperyear || !installmentpermonth) {
+                
+                            res
+                                .status(400)
+                                .json({
+                                    message: 'Invalid Request !'
+                                });
+                
+                        } else {
+                
+                            loanschedule
+                                .loanscheduleUser(requestid,loanamount, loanterms,amountinterestrate,paymentperyear,installmentpermonth)
+                                .then(result => {
+                
+                                    res.send({
+                                        "message": "loanschedule created successfully",
+                                        "status": true,
+                
+                                    });
+                
+                
+                                })
+                                .catch(err => res.status(err.status).json({
+                                    message: err.message
+                                }))
+                        }
+                    }); 
+
+                    router.post('/getloanschedule', cors(), (req, res) => {
+                        
+                                console.log(req.body.requestid);
+                                var requestid = req.body.requestid;
+                                getloanschedule
+                                    .getloanschedule(requestid)
+                                    .then(function(result) {
+                                        console.log(result)
+                        
+                                        res.send({
+                                            status: result.status,
+                                            message: result.usr
+                                        });
+                                    })
+                                    .catch(err => res.status(err.status).json({
+                                        message: err.message
+                                    }));
+                        
+                        
+                            });
+        
 
     function checkToken(req) {
 

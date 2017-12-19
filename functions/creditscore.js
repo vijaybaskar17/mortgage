@@ -19,14 +19,10 @@ exports.creditscore = (requestid) => new Promise((resolve, reject) => {
             .then(() => resolve({status: 201, message: 'credit score generated'}))
             .catch(err => {
     
-                if (err.code == 11000) {
+              
     
-                    reject({status: 409, message: 'credit score not generated !'});
-    
-                } else {
-    
-                    reject({status: 500, message: 'Internal Server Error !'});
-                }
+                    reject({status: 500, message: err});
+                })
             });
-    });
+
     

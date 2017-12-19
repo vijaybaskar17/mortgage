@@ -38,29 +38,4 @@ exports.loginUser = (email, password) =>
             })
 
 
-
-
-            .then(users => {
-                console.log(users)
-                if (users.length == 0) {
-
-                    reject({
-                        status: 404,
-                        message: 'User Not Found !'
-                    });
-
-                } else {
-
-                    return users[0];
-
-                }
-            })
-
-
-            .catch(err => reject({
-                status: 403,
-                message: 'email id not registered'
-            }));
-
-
     });

@@ -12,7 +12,7 @@ var Photo = mongoose.Schema({
         length: 255
     },
 
-    userid: String
+    requestid: String
 
 });
 mongoose.Promise = global.Promise;
