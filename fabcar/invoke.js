@@ -342,7 +342,7 @@ var tx_id = null;
  function savetransaction(params) {
     var TransactionDetails;
 
-Promise.resolve().then(() => {
+ Promise.resolve().then(() => {
     console.log("Create a client and set the wallet location");
     client = new hfc();
     return hfc.newDefaultKeyValueStore({ path: options.wallet_path });
@@ -470,7 +470,8 @@ Promise.resolve().then(() => {
     return 'Failed to send transaction due to error: ' + err.stack ? err.stack :
         err;
 });
- }
+ } 
+
 module.exports = {
     savetransaction: savetransaction,
     // updatetransaction:updatetransaction

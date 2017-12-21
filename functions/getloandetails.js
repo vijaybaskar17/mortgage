@@ -1,10 +1,10 @@
 'use strict';
-
+//var bcSdk = require('../fabcar/query');
 const user = require('../models/loandetails');
 
 //const user = require('../models/fetchdata');
 
-exports.getloandetails = (email) => {
+exports.getloandetails = () => {
 
     return new Promise((resolve, reject) => {
 

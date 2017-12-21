@@ -68,7 +68,7 @@ function readIndex() {
         console.error("Caught Error", err);
     });
 }
-function readRequest(params) {
+function getparticulardetails(params) {
     console.log(params, 'data in params for query method')
     return Promise.resolve().then(() => {
             console.log("Create a client and set the wallet location");
@@ -121,7 +121,7 @@ function readRequest(params) {
             console.error("Caught Error", err);
         });
 }
-function readAllRequest(params) {
+function getloandetails(params) {
     console.log(params, 'data in params for query method')
     return Promise.resolve().then(() => {
             console.log("Create a client and set the wallet location");
@@ -176,8 +176,10 @@ function readAllRequest(params) {
             console.error("Caught Error", err);
         });
 }
+
+
 module.exports = {
     readIndex:readIndex,
-    readRequest: readRequest,
-    readAllRequest: readAllRequest
+    getparticulardetails: getparticulardetails,
+    getloandetails:getloandetails
 };

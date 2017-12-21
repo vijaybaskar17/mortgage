@@ -10,6 +10,7 @@ const readRequest = require('./functions/readRequest');
 const preclosing = require('./functions/preclosing');
 const loanschedule = require('./functions/loanschedule');
 const getloanschedule = require('./functions/getloanschedule');
+const approveloan = require('./functions/approveloan');
 
 var cors = require('cors');
 var mongoose = require('mongoose');
@@ -36,9 +37,10 @@ module.exports = router => {
             .creditscore(requestid)
             .then(result => {
 
-
+                console.log("res123----",result);
                 res.status(result.status).json({
-                    message: "succeess"
+                    message: "credit score generated ",
+                    creditscore: result.creditscore
 
 
                 });
@@ -67,10 +69,6 @@ module.exports = router => {
         console.log(lastname);
         const dateofbirth = req.body.dateofbirth;
         console.log(dateofbirth);
-        //const gender = req.body.gender;
-        //console.log(gender);
-        // const age =parseInt(req.body.age);
-        // console.log(age);
         const phonenumber = parseInt(req.body.phonenumber);
         console.log(phonenumber);
         const retypepassword = req.body.retypepassword;
@@ -142,7 +140,7 @@ module.exports = router => {
     });
 
     router.post('/UploadDocs', multipartMiddleware, function(req, res, next) {
-        const id = req.headers['requestid'];
+        const id = req.query['requestid'];
         console.log(id)
         var photo = new Photo(req.body);
         console.log("req.files.image" + JSON.stringify(req.files));
@@ -156,7 +154,7 @@ module.exports = router => {
                 console.log('** file uploaded to Cloudinary service');
                 console.dir(image);
                 photo.url = image.url;
-                photo.userid = id;
+                photo.requestid = id;
                 // photo.claimno = claimno;
                 // Save photo with image metadata
                 return photo.save();
@@ -240,15 +238,14 @@ module.exports = router => {
 
     });
 
-    router.get('/getloandetails', cors(), (req, res) => {
+  router.get('/getloandetails', cors(), (req, res) => {
         var email = req.body.email;
         var password = req.body.password;
         console.log(JSON.stringify(req.body));
         console.log(email); 
-     /*  if (email == "man@admin.com") {
-            console.log("yes"); */
             getloandetails
                 .getloandetails()
+
                 .then(function(result) {
                     console.log("result---",result)
 
@@ -262,29 +259,35 @@ module.exports = router => {
                 }));
 
 
-    });
+    }); 
 
 
-    router.post('/getparticulardetails', cors(), (req, res) => {
-
-        console.log(req.body.requestid);
-        var requestid = req.body.requestid;
-        getparticulardetails
-            .getparticulardetails(requestid)
-            .then(function(result) {
-                console.log(result)
-
-                res.send({
-                    status: result.status,
-                    message: result.usr
+    router.get('/getparticulardetails', cors(), (req, res) => {
+       if (1 == 1) {
+            
+                        const requestid1 = checkToken(req);
+                        console.log("requestid1", requestid1);
+                        const requestid = requestid1;
+            
+            
+                        getparticulardetails.getparticulardetails(requestid)
+                        .then(function(result) {
+                            
+                              return res.json({
+                                 "status":200,
+                                 "message": result.query
+                             });
+                         })
+                         .catch(err => res.status(err.status).json({
+                             message: err.message
+                         }));
+                 } else {
+                     res.status(401).json({
+                         "status": false,
+                         message: 'cant fetch data !'
+                     });
+                 }
                 });
-            })
-            .catch(err => res.status(err.status).json({
-                message: err.message
-            }));
-
-
-    });
     router.post('/savetransaction', cors(), (req, res) => {
         var name = req.body.name;
         var transactionstring = JSON.stringfy(req.body.transactionstring);
@@ -309,35 +312,25 @@ module.exports = router => {
 
 
     router.post('/approveloan', cors(), (req, res) => {
-        const id = req.body.requestid;
-        console.log(id);
-
-        if (!id) {
+       const status =req.body.status ;
+        console.log(status);
+        //const status ="Your Request has been approved";
+        if (status=="Approved") {
             // the if statement checks if any of the above paramenters are null or not..if
             // is the it sends an error report.
             res
-                .status(400)
+                .status(200)
                 .json({
-                    message: 'Invalid Request !'
+                    message: 'Your Request has been approved !'
                 });
 
         } else {
-            approveloan
-                .approveloan(id)
-                .then(result => {
-
-                    res
-                        .status(result.status)
-                        .json({
-                            status: result.status,
-                            message: result.message
-                        })
-                })
-                .catch(err => res.status(err.status).json({
-                    message: err.message
-                }));
-        }
-
+             res
+                .status(200)
+                .json({
+                    message: 'Your Request has been rejected !'
+                });
+            }
     });
 
 
@@ -482,7 +475,39 @@ module.exports = router => {
                                     }));
                         
                         
-                            });
+                            }); 
+
+                            /* router.get("/getloandetails", cors(), (req, res) => {
+                                
+                                        if (1==1) {
+                                
+                                            var startKey = '000';
+                                            console.log("startKey", startKey);
+                                            var endKey = '999';
+                                            console.log("endKey--", endKey);
+                                
+                                            getloandetails
+                                                .getloandetails(startKey, endKey)
+                                                .then(function(result) {
+                                                    console.log("  result.query---->", result.query);
+                                                    return res.json({
+                                                        "status": 200,
+                                                        "readAllRequest": result.query
+                                                    });
+                                                })
+                                                .catch(err => res.status(err.status).json({
+                                                    message: err.message
+                                                }));
+                                        } else {
+                                            res
+                                                .status(401)
+                                                .json({
+                                                    "status": false,
+                                                    message: 'cant fetch data !'
+                                                });
+                                        }
+                                    }); */
+                                
         
 
     function checkToken(req) {

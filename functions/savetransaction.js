@@ -25,7 +25,8 @@ exports.savetransaction = (requestid,transactionstring) => {
     message: 'your loan details entered successfully !'
 }))
 
-.then(() => bcSdk.savetransaction({ TransactionDetails: newloanpage})
+.then(() => 
+bcSdk.savetransaction({ TransactionDetails: newloanpage})
 )
         .catch(err => {
             if (err.code == 11000) {

@@ -16,10 +16,8 @@ exports.creditscore = (requestid) => new Promise((resolve, reject) => {
         });
         newUser
             .save()
-            .then(() => resolve({status: 201, message: 'credit score generated'}))
+            .then(() => resolve({status: 201, message: 'credit score generated',creditscore:creditscore}))
             .catch(err => {
-    
-              
     
                     reject({status: 500, message: err});
                 })
