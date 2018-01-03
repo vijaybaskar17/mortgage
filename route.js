@@ -11,6 +11,7 @@ const preclosing = require('./functions/preclosing');
 const loanschedule = require('./functions/loanschedule');
 const getloanschedule = require('./functions/getloanschedule');
 const approveloan = require('./functions/approveloan');
+const updatetransaction = require('./functions/updatetransaction');
 
 var cors = require('cors');
 var mongoose = require('mongoose');
@@ -238,7 +239,7 @@ module.exports = router => {
 
     });
 
-  router.get('/getloandetails', cors(), (req, res) => {
+ /*router.get('/getloandetails', cors(), (req, res) => {
         var email = req.body.email;
         var password = req.body.password;
         console.log(JSON.stringify(req.body));
@@ -259,7 +260,7 @@ module.exports = router => {
                 }));
 
 
-    }); 
+    }); */
 
 
     router.get('/getparticulardetails', cors(), (req, res) => {
@@ -272,7 +273,7 @@ module.exports = router => {
             
                         getparticulardetails.getparticulardetails(requestid)
                         .then(function(result) {
-                            
+                            console.log("requestid1",requestid1)
                               return res.json({
                                  "status":200,
                                  "message": result.query
@@ -339,9 +340,9 @@ module.exports = router => {
 
         if (1 == 1) {
 
-            const requestid1 = checkToken(req);
-            console.log("requestid1", requestid1);
-            const requestid = requestid1;
+            const requestid = checkToken(req);
+            console.log("requestid1", requestid);
+            const requestid1 = requestid;
 
 
             readRequest.readRequest(requestid)
@@ -477,7 +478,7 @@ module.exports = router => {
                         
                             }); 
 
-                            /* router.get("/getloandetails", cors(), (req, res) => {
+                            router.get("/getloandetails", cors(), (req, res) => {
                                 
                                         if (1==1) {
                                 
@@ -489,7 +490,7 @@ module.exports = router => {
                                             getloandetails
                                                 .getloandetails(startKey, endKey)
                                                 .then(function(result) {
-                                                    console.log("  result.query---->", result.query);
+                                                    console.log("  result.query", result.query);
                                                     return res.json({
                                                         "status": 200,
                                                         "readAllRequest": result.query
@@ -506,7 +507,31 @@ module.exports = router => {
                                                     message: 'cant fetch data !'
                                                 });
                                         }
-                                    }); */
+                                    });
+
+                                        router.post('/updatetransaction', cors(), (req, res) => {
+                                            console.log("entering in to the upda trans");
+                                            
+                                            var transactionstring = req.body.transactionstring;
+                                            var requestid = req.body.requestid;
+                                            console.log("entering in to the upda trans",requestid);
+                                            
+                                                updatetransaction
+                                                .updatetransaction(transactionstring,requestid )
+                                                .then(function(result) {
+                                                    console.log(result)
+                                    
+                                                    res.send({
+                                    
+                                                        message: "entered successfully"
+                                                    });
+                                                })
+                                                .catch(err => res.status(err.status).json({
+                                                    message: err.message
+                                                }));
+                                    
+                                    
+                                        });
                                 
         
 
