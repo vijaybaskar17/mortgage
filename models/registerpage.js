@@ -15,7 +15,7 @@ const registerpageSchema = mongoose.Schema({
    // gender: String,
     // age: Number,
     phonenumber: Number,
-    // usertype: String,
+    usertype: String,
     dateofbirth: String,
     retypepassword: String 
 });

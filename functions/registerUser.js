@@ -4,7 +4,7 @@
 const user = require('../models/registerpage');  
 // const user = require('../models/fetchdata');
 
-exports.registerUser = (email, password, retypepassword,firstname,lastname,dateofbirth,phonenumber) => new Promise((resolve, reject) => {
+exports.registerUser = (email, password, retypepassword,firstname,lastname,dateofbirth,phonenumber,usertype) => new Promise((resolve, reject) => {
 
     const newUser = new user({
 
@@ -16,6 +16,7 @@ exports.registerUser = (email, password, retypepassword,firstname,lastname,dateo
         dateofbirth: dateofbirth,
         //gender:gender,
         phonenumber:phonenumber,
+        usertype:usertype,
        
     });
     newUser

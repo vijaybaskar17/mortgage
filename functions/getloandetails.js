@@ -16,7 +16,7 @@ exports.getloandetails = (startKey,endKey) => {
         })
 
        .then((requestarray) => {
-            console.log("data in requestArray " + requestarray)
+            console.log("data in requestArray" + requestarray)
 
            return resolve({
                 status: 200,

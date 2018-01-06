@@ -3,7 +3,7 @@
 const user = require('../models/registerpage');
 // const user = require('../models/fetchdata');
 
-exports.loginUser = (email, password) =>
+exports.loginUser = (email, password,usertype) =>
 
     new Promise((resolve, reject) => {
 
@@ -11,7 +11,8 @@ exports.loginUser = (email, password) =>
         console.log(email);
 
         user.find({
-                "email": email
+                "email": email ,
+            
             })
             .then(users => {
 
@@ -24,7 +25,6 @@ exports.loginUser = (email, password) =>
 
                     resolve({
                         status: 200,
-                        
                         users: users[0]
                     });
 

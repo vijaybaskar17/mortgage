@@ -12,6 +12,8 @@ const loanschedule = require('./functions/loanschedule');
 const getloanschedule = require('./functions/getloanschedule');
 const approveloan = require('./functions/approveloan');
 const updatetransaction = require('./functions/updatetransaction');
+const savetransaction = require('./functions/savetransaction');
+const readIndex = require('./functions/readIndex');
 
 var cors = require('cors');
 var mongoose = require('mongoose');
@@ -24,7 +26,7 @@ var multipartMiddleware = multipart();
 var Photo = require('./models/document');
 var path = require('path');
 
-const savetransaction = require('./functions/savetransaction');
+
 
 module.exports = router => {
 
@@ -74,9 +76,11 @@ module.exports = router => {
         console.log(phonenumber);
         const retypepassword = req.body.retypepassword;
         console.log(retypepassword);
+        const usertype = req.body.usertype;
+        console.log(usertype);
 
 
-        if (!email || !password || !firstname || !lastname || !dateofbirth || !phonenumber || !retypepassword) {
+        if (!email || !password || !firstname || !lastname || !dateofbirth || !phonenumber || !retypepassword || !usertype) {
 
             res
                 .status(400)
@@ -87,7 +91,7 @@ module.exports = router => {
         } else {
 
             registerUser
-                .registerUser(email, password, retypepassword, firstname, lastname, dateofbirth, phonenumber)
+                .registerUser(email, password, retypepassword, firstname, lastname, dateofbirth, phonenumber,usertype)
                 .then(result => {
 
                     res.send({
@@ -113,16 +117,18 @@ module.exports = router => {
         console.log(emailid);
         const passwordid = req.body.password;
         console.log(passwordid);
-
+       
         login
             .loginUser(emailid, passwordid)
             .then(result => {
+
+                console.log("result ===>>>",result.users.usertype)
 
 
                 res.send({
                     "message": "Login Successful",
                     "status": true,
-
+                    "usertype":result.users.usertype
 
                 });
 
@@ -517,7 +523,7 @@ module.exports = router => {
                                             console.log("entering in to the upda trans",requestid);
                                             
                                                 updatetransaction
-                                                .updatetransaction(transactionstring,requestid )
+                                                .updatetransaction(requestid,transactionstring )
                                                 .then(function(result) {
                                                     console.log(result)
                                     
@@ -531,8 +537,41 @@ module.exports = router => {
                                                 }));
                                     
                                     
-                                        });
-                                
+                                        });  
+
+                                        router.get("/readIndex", cors(), (req, res) => {
+                                            
+                                                    if (1==1) {
+                                            
+                                                        readIndex
+                                                            .readIndex({})
+                                                            .then(function(result) {
+                                                                console.log("result",result);
+                                                                var firstrequest = result.query[0]
+                                                                console.log("firstrequest--", firstrequest);
+                                                                var length = result.query.length;
+                                                                var lastrequest = result.query[length - 1];
+                                                                console.log("lastrequest--", lastrequest);
+                                                                console.log("query",result);
+                                            
+                                                                return res.json({
+                                                                    "status": 200,
+                                                                    "result": result
+                                                                });
+                                                            })
+                                                            .catch(err => res.status(err.status).json({
+                                                                message: err.message
+                                                            }));
+                                                    } else {
+                                                        res
+                                                            .status(401)
+                                                            .json({
+                                                                "status": false,
+                                                                message: 'cant fetch data !'
+                                                            });
+                                                    }
+                                                });
+                                            
         
 
     function checkToken(req) {

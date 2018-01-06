@@ -3,23 +3,27 @@
 // require('bcryptjs');
 var bcSdk = require('../fabcar/invoke.js');
 
-exports.updatetransaction = (requestid,transactionString) => new Promise((resolve, reject) => {
-    const transactiondetails = ({
+exports.updatetransaction = (requestid,transactionstring) => {
+return new Promise((resolve, reject) => {
+
+    const updatetransaction = ({
         requestid:requestid,
-        transactionString: transactionString,
+        transactionstring: transactionstring,
         
     });
-    console.log("ENTERING THE CORE MODULE");
+    console.log("Entering in to the update transaction function");
     bcSdk
         .updatetransaction({
-            
-            TransactionDetails: transactiondetails
+            TransactionDetails: updatetransaction
         })
-        .then(() => resolve({
+        .then((result) => {
+            console.log("result of update"+result)
+            return resolve({
             status: 201,
             message: 'Updated successfully'
-        }))
-        .catch(err => {
+        })
+    }).catch(err => {
+            log("error occured");
             if (err.code == 11000) {
                 reject({
                     status: 409,
@@ -34,3 +38,42 @@ exports.updatetransaction = (requestid,transactionString) => new Promise((resolv
             }
         });
 });
+
+}
+
+/*'use strict';
+
+var express = require('express');
+var router = express.Router();
+var cors = require('cors');
+var bodyParser = require('body-parser');
+var bcSdk = require('../invoke');
+
+exports.updateRequest = (requestid, status, transactionString) =>
+    new Promise((resolve, reject) => {
+        
+        console.log("entering into updateRequest function.......!")
+        
+        const updateRequest = ({
+            requestid: requestid,
+            status: status,
+            transactionString: transactionString,
+        })
+        
+        bcSdk.updateRequest({ user: user, RequestDetails: updateRequest })
+
+        .then(() => resolve({ "status": 200, "message": "request updated Successfully" }))
+
+        .catch(err => {
+
+            if (err.code == 401) {
+
+                reject({ "status": 401, "message": 'Request Already updated!' });
+
+            } else {
+                console.log("error occurred" + err);
+
+                reject({ "status": 500, "message": 'Internal Server Error !' });
+            }
+        });
+    });*/
