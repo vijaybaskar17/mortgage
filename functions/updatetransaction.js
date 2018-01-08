@@ -2,26 +2,31 @@
 // const bc_client = require('../blockchain_sample_client'); const bcrypt =
 // require('bcryptjs');
 var bcSdk = require('../fabcar/invoke.js');
+const  loanpage = require('../models/loandetails');
 
 exports.updatetransaction = (requestid,transactionstring) => {
 return new Promise((resolve, reject) => {
 
-    const updatetransaction = ({
+    const newloanpage= new loanpage ({
         requestid:requestid,
         transactionstring: transactionstring,
         
     });
-    console.log("Entering in to the update transaction function");
+
+    newloanpage.save()
+
+   .then(() => resolve({
+    status: 201,
+    message: 'user loan details updated successfully!'
+}))
+   // console.log("Entering in to the update transaction function");
+    .then(() => 
     bcSdk
         .updatetransaction({
-            TransactionDetails: updatetransaction
+            TransactionDetails: newloanpage
         })
-        .then((result) => {
-            console.log("result of update"+result)
-            return resolve({
-            status: 201,
-            message: 'Updated successfully'
-        })
+    )
+        
     }).catch(err => {
             log("error occured");
             if (err.code == 11000) {
@@ -37,9 +42,9 @@ return new Promise((resolve, reject) => {
                 });
             }
         });
-});
 
-}
+    }
+
 
 /*'use strict';
 

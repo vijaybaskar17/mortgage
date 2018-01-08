@@ -3,12 +3,12 @@
 const user = require('../models/user');
 
 exports.creditscore = (requestid) => new Promise((resolve, reject) => {
-    var creditscore    = "";
-    var possible= "0123456789"
-    for (var i=0; i<3;i++)
-    creditscore += possible.charAt(Math.floor(Math.random() * possible.length));
-    console.log("creditscore"+creditscore)
-
+    var creditscore = "";
+    var possible = "0123456789674736728367382772898366377267489457636736273448732432642326734"
+    for (var i = 0; i < 3; i++)
+        creditscore+= (possible.charAt(Math.floor(Math.random() * possible.length))).toString();
+    console.log("creditscore" + creditscore)
+    
         const newUser = new user({
             requestid:requestid,
             creditscore: creditscore

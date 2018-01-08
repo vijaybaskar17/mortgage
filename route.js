@@ -517,19 +517,20 @@ module.exports = router => {
 
                                         router.post('/updatetransaction', cors(), (req, res) => {
                                             console.log("entering in to the upda trans");
-                                            
-                                            var transactionstring = req.body.transactionstring;
+
                                             var requestid = req.body.requestid;
+                                            var transactionstring = req.body.transactionstring;
+                                            
                                             console.log("entering in to the upda trans",requestid);
                                             
                                                 updatetransaction
-                                                .updatetransaction(requestid,transactionstring )
+                                                .updatetransaction(requestid,transactionstring)
                                                 .then(function(result) {
                                                     console.log(result)
                                     
                                                     res.send({
                                     
-                                                        message: "entered successfully"
+                                                        message: result.message
                                                     });
                                                 })
                                                 .catch(err => res.status(err.status).json({
