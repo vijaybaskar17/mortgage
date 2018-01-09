@@ -30,7 +30,7 @@ var path = require('path');
 
 module.exports = router => {
 
-    router.post('/creditscore', cors(), (req, res) => {
+   /* router.post('/creditscore', cors(), (req, res) => {
 
         console.log("entering register function in functions ");
         const requestid = parseInt(req.body.requestid);
@@ -55,7 +55,7 @@ module.exports = router => {
                 status: err.status
             }));
 
-    });
+    }); */
 
 
     router.post('/registerUser', cors(), (req, res) => {
@@ -522,17 +522,33 @@ module.exports = router => {
                                             var transactionstring = req.body.transactionstring;
                                             
                                             console.log("entering in to the upda trans",requestid);
-                                            
+
+                                                creditscore
+                                                .creditscore(requestid)
+                                                .then(results => {
+                                                   console.log(results.creditscore);
+                                                    var creditscore = results.creditscore
+                                                   // console.log(transactionstring);
+                                                    var  updatedString= {
+                                                        "loanamount":transactionstring.loanamount,
+                                                        "loanterms": transactionstring.loanterms,
+                                                        "amountinterestrate":transactionstring.amountinterestrate,
+                                                        "paymentperyear" : transactionstring.paymentperyear,
+                                                        "installmentpermonth": transactionstring.installmentpermonth,
+                                                        "creditscore":creditscore,
+                                                    }
+
                                                 updatetransaction
-                                                .updatetransaction(requestid,transactionstring)
+                                                .updatetransaction(requestid,updatedString)
                                                 .then(function(result) {
-                                                    console.log(result)
+                                                    console.log("result....",result)                                    
                                     
                                                     res.send({
                                     
                                                         message: result.message
                                                     });
                                                 })
+                                            })
                                                 .catch(err => res.status(err.status).json({
                                                     message: err.message
                                                 }));

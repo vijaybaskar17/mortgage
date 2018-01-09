@@ -468,7 +468,7 @@ function savetransaction(params) {
 }
 
 function updatetransaction(params) {
-    var TransactionDetails;
+    var updatedetails;
 
     Promise.resolve().then(() => {
         console.log("Create a client and set the wallet location");
@@ -492,9 +492,9 @@ function updatetransaction(params) {
         targets.push(peerObj);
         return;
     }).then(() => {
-        TransactionDetails = params.TransactionDetails;
-        console.log("transaction details", params.TransactionDetails);
-        var str = JSON.stringify(TransactionDetails.transactionstring)
+        updatedetails = params.updatedetails;
+        console.log("updatedetails", params.updatedetails);
+        var str = JSON.stringify(updatedetails.transactionstring)
         console.log("line number  58---->", str);
         tx_id = client.newTransactionID();
         console.log("Assigning transaction_id: ", tx_id._transaction_id);
@@ -505,7 +505,7 @@ function updatetransaction(params) {
             targets: targets,
             chaincodeId: options.chaincode_id,
             fcn: 'updateRequest',
-            args: [TransactionDetails.requestid, str],
+            args: [updatedetails.requestid, str],
             chainId: options.channel_id,
             txId: tx_id
         };

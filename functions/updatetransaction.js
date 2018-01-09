@@ -19,11 +19,11 @@ return new Promise((resolve, reject) => {
     status: 201,
     message: 'user loan details updated successfully!'
 }))
-   // console.log("Entering in to the update transaction function");
+  
     .then(() => 
     bcSdk
         .updatetransaction({
-            TransactionDetails: newloanpage
+            updatedetails: newloanpage
         })
     )
         
