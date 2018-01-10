@@ -528,16 +528,32 @@ module.exports = router => {
                                                 .then(results => {
                                                    console.log(results.creditscore);
                                                     var creditscore = results.creditscore
-                                                   // console.log(transactionstring);
-                                                    var  updatedString= {
+                                                    console.log(creditscore);
+
+                                                    var updatedString = ""
+                                                    if(transactionstring.creditscore == ""){
+                                                        console.log("creditscore ++++++++++>>>>>");
+                                                    updatedString= {
                                                         "loanamount":transactionstring.loanamount,
                                                         "loanterms": transactionstring.loanterms,
                                                         "amountinterestrate":transactionstring.amountinterestrate,
                                                         "paymentperyear" : transactionstring.paymentperyear,
                                                         "installmentpermonth": transactionstring.installmentpermonth,
-                                                        "creditscore":creditscore,
-                                                    }
-
+                                                        "creditscore":"",
+                                                    } 
+                                                }
+                                                else{
+                                                    console.log("creditscore notnull ++++++++++>>>>>");
+                                                    
+                                                    updatedString= {
+                                                        "loanamount":transactionstring.loanamount,
+                                                        "loanterms": transactionstring.loanterms,
+                                                        "amountinterestrate":transactionstring.amountinterestrate,
+                                                        "paymentperyear" : transactionstring.paymentperyear,
+                                                        "installmentpermonth": transactionstring.installmentpermonth,
+                                                        "creditscore": creditscore,
+                                                    }                                                     
+                                                }
                                                 updatetransaction
                                                 .updatetransaction(requestid,updatedString)
                                                 .then(function(result) {
@@ -548,12 +564,13 @@ module.exports = router => {
                                                         message: result.message
                                                     });
                                                 })
-                                            })
+                                            
                                                 .catch(err => res.status(err.status).json({
                                                     message: err.message
                                                 }));
-                                    
-                                    
+                                            
+                                        })
+                                            
                                         });  
 
                                         router.get("/readIndex", cors(), (req, res) => {
@@ -608,6 +625,4 @@ module.exports = router => {
         }
     }
 
-
-
-}
+  }
