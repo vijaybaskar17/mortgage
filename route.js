@@ -280,6 +280,7 @@ module.exports = router => {
                         getparticulardetails.getparticulardetails(requestid)
                         .then(function(result) {
                             console.log("requestid1",requestid1)
+                            console.log("result.query",result.query)
                               return res.json({
                                  "status":200,
                                  "message": result.query
@@ -319,10 +320,16 @@ module.exports = router => {
 
 
     router.post('/approveloan', cors(), (req, res) => {
-       const status =req.body.status ;
-        console.log(status);
-        //const status ="Your Request has been approved";
-        if (status=="Approved") {
+       const requestid =req.body.requestid ;
+        console.log(requestid);
+        const transactionstring = req.body.transactionstring;
+        console.log(transactionstring);
+
+        updatetransaction
+        .updatetransaction(requestid,transactionstring)
+        .then(function() {
+            console.log("result....",result)     
+        if (legal =="Approved") {
             // the if statement checks if any of the above paramenters are null or not..if
             // is the it sends an error report.
             res
@@ -338,6 +345,7 @@ module.exports = router => {
                     message: 'Your Request has been rejected !'
                 });
             }
+        })
     });
 
 
@@ -421,34 +429,16 @@ module.exports = router => {
 
                 const requestid = req.body.requestid;
                 console.log(requestid);
+                const transactionstring = req.body.transactionstring;
+                console.log(transactionstring);
                 
-                        const loanamount = req.body.loanamount;
-                        console.log(loanamount);
-                
-                        const loanterms = req.body.loanterms;
-                        console.log("loan",loanterms);
-                
-                        const amountinterestrate = req.body.amountinterestrate;
-                        console.log(amountinterestrate);
-                        const paymentperyear = req.body.paymentperyear;
-                        console.log(paymentperyear);
-                        const installmentpermonth = req.body.installmentpermonth;
-                        console.log(installmentpermonth);
-                
-                        if (!requestid||! loanamount|| !loanterms || !amountinterestrate || !paymentperyear || !installmentpermonth) {
-                
-                            res
-                                .status(400)
-                                .json({
-                                    message: 'Invalid Request !'
-                                });
-                
-                        } else {
-                
-                            loanschedule
-                                .loanscheduleUser(requestid,loanamount, loanterms,amountinterestrate,paymentperyear,installmentpermonth)
+                         loanschedule
+                             .loanscheduleUser(requestid,transactionstring)
                                 .then(result => {
-                
+                                    updatetransaction
+                                    .updatetransaction(requestid,transactionstring)
+                                    .then(function(result) {
+                                        console.log("result....",result)                                    
                                     res.send({
                                         "message": "loanschedule created successfully",
                                         "status": true,
@@ -460,7 +450,8 @@ module.exports = router => {
                                 .catch(err => res.status(err.status).json({
                                     message: err.message
                                 }))
-                        }
+                            });
+                        
                     }); 
 
                     router.post('/getloanschedule', cors(), (req, res) => {
@@ -515,63 +506,63 @@ module.exports = router => {
                                         }
                                     });
 
-                                        router.post('/updatetransaction', cors(), (req, res) => {
-                                            console.log("entering in to the upda trans");
+                                    router.post('/updatetransaction', cors(), (req, res) => {
+                                        console.log("entering in to the upda trans",req.body);
 
-                                            var requestid = req.body.requestid;
-                                            var transactionstring = req.body.transactionstring;
-                                            
-                                            console.log("entering in to the upda trans",requestid);
+                                        var body = req.body
+                                        var requestid = body.id;
+                                        var transactionstring = body.transactionstring;
+                                        
+                                        console.log("entering in to the upda trans",requestid,transactionstring);
 
-                                                creditscore
-                                                .creditscore(requestid)
-                                                .then(results => {
-                                                   console.log(results.creditscore);
-                                                    var creditscore = results.creditscore
-                                                    console.log(creditscore);
+                                            creditscore
+                                            .creditscore(requestid)
+                                            .then(results => {
+                                               console.log(results.creditscore);
+                                                var creditscore = results.creditscore
+                                                console.log("transactionstring",transactionstring);
+                                                console.log("transactionstring",req.body.creditscore);
 
-                                                    var updatedString = ""
-                                                    if(transactionstring.creditscore == ""){
-                                                        console.log("creditscore ++++++++++>>>>>");
-                                                    updatedString= {
-                                                        "loanamount":transactionstring.loanamount,
-                                                        "loanterms": transactionstring.loanterms,
-                                                        "amountinterestrate":transactionstring.amountinterestrate,
-                                                        "paymentperyear" : transactionstring.paymentperyear,
-                                                        "installmentpermonth": transactionstring.installmentpermonth,
-                                                        "creditscore":"",
-                                                    } 
+                                                var updatedString = ""
+                                                if(body.creditscore == ""){
+                                                    console.log("creditscore ++++++++++>>>>>");
+                                                updatedString= {
+        
+                                                    "creditscore":""
+                                                } 
+                                        
+                                            }
+                                            else{
+                                                console.log("creditscore notnull ++++++++++>>>>>");
+                                                
+                                                updatedString= {
+
+                                                    "creditscore": creditscore
                                                 }
-                                                else{
-                                                    console.log("creditscore notnull ++++++++++>>>>>");
-                                                    
-                                                    updatedString= {
-                                                        "loanamount":transactionstring.loanamount,
-                                                        "loanterms": transactionstring.loanterms,
-                                                        "amountinterestrate":transactionstring.amountinterestrate,
-                                                        "paymentperyear" : transactionstring.paymentperyear,
-                                                        "installmentpermonth": transactionstring.installmentpermonth,
-                                                        "creditscore": creditscore,
-                                                    }                                                     
-                                                }
-                                                updatetransaction
-                                                .updatetransaction(requestid,updatedString)
-                                                .then(function(result) {
-                                                    console.log("result....",result)                                    
-                                    
-                                                    res.send({
-                                    
-                                                        message: result.message
-                                                    });
-                                                })
+                                                
                                             
-                                                .catch(err => res.status(err.status).json({
-                                                    message: err.message
-                                                }));
+                                            } 
+                                            updatetransaction
+                                            .updatetransaction(requestid,updatedString)
+                                            .then(function(result) {
+                                                console.log("result....",result)                                    
+                                
+                                                res.send({
+                                
+                                                    message: result.message,
+                                                    creditscore:result.creditscore
+                                                });
+                                            })
+                                        
+                                            .catch(err => res.status(err.status).json({
+                                                message: err.message
+                                            }));
                                             
-                                        })
-                                            
-                                        });  
+                                    })
+                                        
+                                    });
+
+
 
                                         router.get("/readIndex", cors(), (req, res) => {
                                             

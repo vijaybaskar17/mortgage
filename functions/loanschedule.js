@@ -1,18 +1,14 @@
 'use strict';
 
-const loanuser = require('../models/loanschedule');  
+const  loanpage = require('../models/loandetails');  
 // const user = require('../models/fetchdata');
 
-exports.loanscheduleUser = (requestid,loanamount, loanterms,amountinterestrate,paymentperyear,installmentpermonth) => new Promise((resolve, reject) => {
+exports.loanscheduleUser = (requestid,transactionstring) => new Promise((resolve, reject) => {
 
-    const loanUser = new loanuser({
+    const loanUser = new loanpage({
 
         requestid: requestid,
-        loanamount: loanamount,
-        loanterms: loanterms,
-        amountinterestrate:amountinterestrate,
-        paymentperyear: paymentperyear,
-        installmentpermonth: installmentpermonth,
+        transactionstring:transactionstring
        
     });
     loanUser

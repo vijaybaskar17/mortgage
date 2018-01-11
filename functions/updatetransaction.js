@@ -12,12 +12,13 @@ return new Promise((resolve, reject) => {
         transactionstring: transactionstring,
         
     });
-
+   
     newloanpage.save()
 
-   .then(() => resolve({
+   .then(() => resolve({ 
     status: 201,
-    message: 'user loan details updated successfully!'
+    message: 'user loan details updated successfully!',
+    creditscore: transactionstring.creditscore
 }))
   
     .then(() => 
