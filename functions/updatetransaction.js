@@ -18,7 +18,7 @@ return new Promise((resolve, reject) => {
    .then(() => resolve({ 
     status: 201,
     message: 'user loan details updated successfully!',
-    creditscore: transactionstring.creditscore
+   // creditscore: transactionstring.creditscore
 }))
   
     .then(() => 

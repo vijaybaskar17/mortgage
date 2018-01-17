@@ -1,42 +1,32 @@
 'use strict';
 const  loanpage = require('../models/loandetails');
 
-exports.approveloan = (approved) =>
-    new Promise((resolve, reject) => {
 
+exports.approveloan = (requestid,transactionstring) => {
+    
+return new Promise((resolve, reject) => { 
+   
 
-        if("approved"==approved){
-          var response="approved"
-          console.log(response);
-          
-        }
-        else{
-            var response="rejected"
-            console.log(response);
-        }
+    const newapprove = new loanpage({
 
+           // userid: userid,
+           requestid: requestid,
+           transactionstring:transactionstring
+            
+        
+    });
+    newapprove.save()
+        .then((result) => resolve({status: 201, message: 'success'}))
+        .catch(err => {
 
-     }) .then(() => resolve({
-                status: 201,
-                message: 'loan  approved Sucessfully !'
-            }))
+            if (err.code == 11000) {
 
-            .catch(err => {
+                reject({status: 409, message: 'already they are having loan application!'});
 
-                if (err.code == 11000) {
+            } else {
 
-                    reject({
-                        status: 409,
-                        message: ' loan closed !'
-                    });
-
-                } else {
-                    console.log("error occurred" + err);
-
-                    reject({
-                        status: 500,
-                        message: 'Internal Server Error !'
-                    });
-                }
-            });
-
+                reject({status: 500, message: 'Internal Server Error !'});
+            }
+        });
+    });
+};

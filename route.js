@@ -30,10 +30,11 @@ var path = require('path');
 
 module.exports = router => {
 
-   /* router.post('/creditscore', cors(), (req, res) => {
+   router.post('/creditscore', cors(), (req, res) => {
 
+        console.log("credit....>>>",req.body);
         console.log("entering register function in functions ");
-        const requestid = parseInt(req.body.requestid);
+        const requestid = parseInt(req.body.records);
         console.log(requestid);
 
         creditscore
@@ -55,7 +56,7 @@ module.exports = router => {
                 status: err.status
             }));
 
-    }); */
+    }); 
 
 
     router.post('/registerUser', cors(), (req, res) => {
@@ -320,18 +321,15 @@ module.exports = router => {
 
 
     router.post('/approveloan', cors(), (req, res) => {
-       const requestid =req.body.requestid ;
+        console.log(req.body)
+       const requestid =req.body.id ;
         console.log(requestid);
         const transactionstring = req.body.transactionstring;
         console.log(transactionstring);
+        console.log("legal..123>>>",transactionstring.legal)
 
-        updatetransaction
-        .updatetransaction(requestid,transactionstring)
-        .then(function() {
-            console.log("result....",result)     
-        if (legal =="Approved") {
-            // the if statement checks if any of the above paramenters are null or not..if
-            // is the it sends an error report.
+        if (transactionstring.legal =="approved") {
+            
             res
                 .status(200)
                 .json({
@@ -345,6 +343,12 @@ module.exports = router => {
                     message: 'Your Request has been rejected !'
                 });
             }
+
+        updatetransaction
+        .updatetransaction(requestid,transactionstring)
+        .then(result =>  {
+            console.log("result....",result)     
+        
         })
     });
 
@@ -506,8 +510,8 @@ module.exports = router => {
                                         }
                                     });
 
-                                    router.post('/updatetransaction', cors(), (req, res) => {
-                                        console.log("entering in to the upda trans",req.body);
+                                   /* router.post('/creditscore', cors(), (req, res) => {
+                                        console.log("entering in to the update trans",req.body);
 
                                         var body = req.body
                                         var requestid = body.id;
@@ -518,7 +522,7 @@ module.exports = router => {
                                             creditscore
                                             .creditscore(requestid)
                                             .then(results => {
-                                               console.log(results.creditscore);
+                                               console.log("results123......>>>>",results.creditscore);
                                                 var creditscore = results.creditscore
                                                 console.log("transactionstring",transactionstring);
                                                 console.log("transactionstring",req.body.creditscore);
@@ -550,7 +554,7 @@ module.exports = router => {
                                                 res.send({
                                 
                                                     message: result.message,
-                                                    creditscore:result.creditscore
+                                                    results:results.creditscore
                                                 });
                                             })
                                         
@@ -560,7 +564,42 @@ module.exports = router => {
                                             
                                     })
                                         
-                                    });
+                                    }); */ 
+
+
+   router.post('/updatetransaction', cors(), (req, res) => {
+        
+        console.log("entering in to the update trans.....ui",req.body);
+        
+         var body = req.body
+        var requestid = body.id;
+      var transactionstring = body.transactionstring;
+                                                
+  console.log("entering in to the upda trans",requestid,transactionstring);
+
+  
+
+        updatetransaction.updatetransaction(requestid,transactionstring)
+        
+        
+        .then(result => {
+
+                console.log(result);
+                res.send({
+                    "message": result.message,
+                    "status": true
+
+
+                });
+            })
+
+            .catch(err => res.status(err.status).json({
+                message: err.message
+            }).json({
+                status: err.status
+            }));
+
+    }); 
 
 
 
