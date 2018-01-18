@@ -6,12 +6,7 @@ const Schema = mongoose.Schema;
 
 const loanscheduleSchema = mongoose.Schema({
     requestid: String,
-    loanamount: String,
-    loanterms: String,
-    amountinterestrate: String,
-    paymentperyear: String,
-    installmentpermonth: String,
-
+    transactionstring : Object
 
 });
 

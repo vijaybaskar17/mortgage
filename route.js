@@ -431,6 +431,7 @@ module.exports = router => {
 
             router.post('/loanscheduleUser', cors(), (req, res) => {
 
+                console.log("ui....123>>>",req.body);
                 const requestid = req.body.requestid;
                 console.log(requestid);
                 const transactionstring = req.body.transactionstring;
@@ -459,7 +460,8 @@ module.exports = router => {
                     }); 
 
                     router.post('/getloanschedule', cors(), (req, res) => {
-                        
+
+                                console.log(req.body);
                                 console.log(req.body.requestid);
                                 var requestid = req.body.requestid;
                                 getloanschedule

@@ -1,4 +1,4 @@
-const loanuser = require('../models/preclosing');  
+const loanuser = require('../models/loanschedule');  
 
 exports.getloanschedule = (requestid) => {
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const  loanpage = require('../models/loandetails');  
+const  loanpage = require('../models/loanschedule');  
 // const user = require('../models/fetchdata');
 
 exports.loanscheduleUser = (requestid,transactionstring) => new Promise((resolve, reject) => {
