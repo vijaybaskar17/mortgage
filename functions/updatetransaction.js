@@ -2,18 +2,18 @@
 // const bc_client = require('../blockchain_sample_client'); const bcrypt =
 // require('bcryptjs');
 var bcSdk = require('../fabcar/invoke.js');
-const  loanpage = require('../models/loandetails');
+const  updatepage = require('../models/update');
 
 exports.updatetransaction = (requestid,transactionstring) => {
 return new Promise((resolve, reject) => {
 
-    const newloanpage= new loanpage ({
+    const newupdatepage= new updatepage ({
         requestid:requestid,
         transactionstring: transactionstring,
         
     });
    
-    newloanpage.save()
+    newupdatepage.save()
 
    .then(() => resolve({ 
     status: 201,
@@ -24,7 +24,7 @@ return new Promise((resolve, reject) => {
     .then(() => 
     bcSdk
         .updatetransaction({
-            updatedetails: newloanpage
+            updatedetails: newupdatepage
         })
     )
         

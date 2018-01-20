@@ -5,6 +5,7 @@ const login = require('./functions/login');
 const registerUser = require('./functions/registerUser');
 const loan = require('./functions/loan');
 const getloandetails = require('./functions/getloandetails');
+const getdetailsuser = require('./functions/getdetailsuser');
 const getparticulardetails = require('./functions/getparticulardetails');
 const readRequest = require('./functions/readRequest');
 const preclosing = require('./functions/preclosing');
@@ -246,13 +247,13 @@ module.exports = router => {
 
     });
 
- /*router.get('/getloandetails', cors(), (req, res) => {
+ router.get('/getdetailsuser', cors(), (req, res) => {
         var email = req.body.email;
         var password = req.body.password;
         console.log(JSON.stringify(req.body));
         console.log(email); 
-            getloandetails
-                .getloandetails()
+        getdetailsuser
+                .getdetailsuser()
 
                 .then(function(result) {
                     console.log("result---",result)
@@ -267,7 +268,7 @@ module.exports = router => {
                 }));
 
 
-    }); */
+    }); 
 
 
     router.get('/getparticulardetails', cors(), (req, res) => {
@@ -297,6 +298,7 @@ module.exports = router => {
                      });
                  }
                 });
+
     router.post('/savetransaction', cors(), (req, res) => {
         var name = req.body.name;
         var transactionstring = JSON.stringfy(req.body.transactionstring);
@@ -429,7 +431,7 @@ module.exports = router => {
                 }
             });
 
-            router.post('/loanscheduleUser', cors(), (req, res) => {
+          router.post('/loanscheduleUser', cors(), (req, res) => {
 
                 console.log("ui....123>>>",req.body);
                 const requestid = req.body.requestid;
@@ -493,7 +495,7 @@ module.exports = router => {
                                             getloandetails
                                                 .getloandetails(startKey, endKey)
                                                 .then(function(result) {
-                                                    console.log("  result.query", result.query);
+                                                    console.log("  result.query1234..>>>", result.query.length);
                                                     return res.json({
                                                         "status": 200,
                                                         "readAllRequest": result.query
@@ -638,7 +640,9 @@ module.exports = router => {
                                                     }
                                                 });
                                             
-        
+
+
+            
 
     function checkToken(req) {
 
