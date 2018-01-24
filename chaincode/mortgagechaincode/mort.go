@@ -78,6 +78,9 @@
          return t.readRequest(APIstub, args)
      case "readAllRequest":
      return t.readAllRequest(APIstub,args)
+    case "getHistory":
+        return t.getHistory(APIstub,args)
+
      }
      return shim.Error("Invalid Smart Contract function name.")
  }
@@ -295,9 +298,51 @@
      fmt.Printf("- queryAll:\n%s\n", buffer.String())
      return shim.Success(buffer.Bytes())
  }
+
+ func (t *SimpleChaincode) getHistory(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+    
+       fmt.Println("0",args[0])
+    
+      interatorArray, err := APIstub.GetHistoryForKey(args[0])
+        if err != nil {
+            return shim.Error(err.Error())
+        }
+        defer interatorArray.Close()
+    
+      // buffer is a JSON array containing QueryResults
+    var buffer bytes.Buffer
+    buffer.WriteString("[")
+    
+    bArrayMemberAlreadyWritten := false
+    for interatorArray.HasNext() {
+        queryResponse, err := interatorArray.Next()
+        if err != nil {
+            return shim.Error(err.Error())
+        }
+        // Add a comma before array members, suppress it for the first array member
+        if bArrayMemberAlreadyWritten == true {
+            buffer.WriteString(",")
+        }
+        //  buffer.WriteString("{\"Key\":")
+        //  buffer.WriteString("\"")
+        //  //buffer.WriteString(queryResponse.Key)
+        // buffer.WriteString("\"")
+        fmt.Println("query response ===============>",queryResponse)
+        buffer.WriteString("{ \"Records\":")
+        // Record is a JSON object, so we write as-is
+        buffer.WriteString(string(queryResponse.Value))
+        buffer.WriteString("}")
+        bArrayMemberAlreadyWritten = true
+    }
+    buffer.WriteString("]")
+    
+    fmt.Printf("- alldata:\n%s\n", buffer.String())
+    
+    return shim.Success(buffer.Bytes())
+    } 
  func makeTimestamp() string {
      t := time.Now()
-     return t.Format(("2006-01-02T15:04:05.999999-07:00"))
+     return t.Format(("2006-01-02T15:04:05.999999-07:00")) 
      //return time.Now().UnixNano() / (int64(time.Millisecond)/int64(time.Nanosecond))
  }
  // The main function is only relevant in unit test mode. Only included here for completeness.

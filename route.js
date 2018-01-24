@@ -7,6 +7,7 @@ const loan = require('./functions/loan');
 const getloandetails = require('./functions/getloandetails');
 const getdetailsuser = require('./functions/getdetailsuser');
 const getparticulardetails = require('./functions/getparticulardetails');
+const getHistory = require('./functions/getHistory');
 const readRequest = require('./functions/readRequest');
 const preclosing = require('./functions/preclosing');
 const loanschedule = require('./functions/loanschedule');
@@ -37,6 +38,8 @@ module.exports = router => {
         console.log("entering register function in functions ");
         const requestid = parseInt(req.body.records);
         console.log(requestid);
+       
+
 
         creditscore
             .creditscore(requestid)
@@ -248,10 +251,7 @@ module.exports = router => {
     });
 
  router.get('/getdetailsuser', cors(), (req, res) => {
-        var email = req.body.email;
-        var password = req.body.password;
-        console.log(JSON.stringify(req.body));
-        console.log(email); 
+       
         getdetailsuser
                 .getdetailsuser()
 
@@ -298,6 +298,29 @@ module.exports = router => {
                      });
                  }
                 });
+
+                router.get('/getHistory',(req,res)=>{
+                    const requestid1 = checkToken(req);
+                    console.log("requestid1", requestid1);
+                    const requestid = requestid1;
+                    
+                           getHistory.getHistory (requestid)
+                                .then(result=>{
+                                    console.log("result....123>>>",result);
+                                   res.status(result.status).json({
+                                    Date: result.recorddate,
+                                    Time: result.recordtime
+
+                                })
+                            })
+                            
+                           .catch(err => res.status(err.status).json({
+                                message: err.message
+                            }).json({
+                                status: err.status
+                            }));
+                        })
+                        
 
     router.post('/savetransaction', cors(), (req, res) => {
         var name = req.body.name;
