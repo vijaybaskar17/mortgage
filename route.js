@@ -300,6 +300,7 @@ module.exports = router => {
                 });
 
                 router.get('/getHistory',(req,res)=>{
+                    console.log("requ...123>>>ui>>>",req.body);
                     const requestid1 = checkToken(req);
                     console.log("requestid1", requestid1);
                     const requestid = requestid1;
@@ -308,8 +309,42 @@ module.exports = router => {
                                 .then(result=>{
                                     console.log("result....123>>>",result);
                                    res.status(result.status).json({
+                                    result:result.docs,
                                     Date: result.recorddate,
-                                    Time: result.recordtime
+                                    Time: result.recordtime,
+                                    Date1: result.recorddate1,
+                                    Time1: result.recordtime1,
+                                    Date2: result.recorddate2,
+                                    Time2: result.recordtime2,
+                                    Date3: result.recorddate3,
+                                    Time3: result.recordtime3,
+                                    Date4: result.recorddate4,
+                                    Time4: result.recordtime4,
+                                    Date5: result.recorddate5,
+                                    Time5: result.recordtime5,
+                                    Date6: result.recorddate6,
+                                    Time6: result.recordtime6,
+                                    Date7: result.recorddate7,
+                                    Time7: result.recordtime7,
+                                    Date8: result.recorddate8,
+                                    Time8: result.recordtime8,
+                                    Date9: result.recorddate9,
+                                    Time9: result.recordtime9,
+                                    Date10: result.recorddate10,
+                                    Time10: result.recordtime10,
+                                    Date11: result.recorddate11,
+                                    Time11: result.recordtime11,
+                                    Date12: result.recorddate12,
+                                    Time12: result.recordtime12,
+                                    Date13: result.recorddate13,
+                                    Time13: result.recordtime13,
+                                    Date14: result.recorddate14,
+                                    Time14: result.recordtime14,
+                                    Date15: result.recorddate15,
+                                    Time15: result.recordtime15,
+                                    Date16: result.recorddate16,
+                                    Time16: result.recordtime16
+
 
                                 })
                             })
