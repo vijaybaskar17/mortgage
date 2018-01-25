@@ -152,6 +152,7 @@ module.exports = router => {
     });
 
     router.post('/UploadDocs', multipartMiddleware, function(req, res, next) {
+        console.log("req123..",req.body)
         const id = req.query['requestid'];
         console.log(id)
         var photo = new Photo(req.body);
@@ -188,14 +189,21 @@ module.exports = router => {
             });
     });
 
-    router.get('/images/id', cors(), (req, res) => {
-        const id = req.body.requestid
-        console.log("id" + id);
+    router.get('/images/id', cors(), (req, res) => { 
+     
+        console.log("req123..",req.body)
+        const id = req.query['requestid'];
+        console.log(id)
+  
+    //     console.log("req123...",req.body)
+    //     const id = req.body.requestid
+    //    console.log("id" + id);
         Photo
             .find({
                 "requestid": id
             })
             .then((images) => {
+                console.log("enter in to the photo");
                 var image = [];
                 for (let i = 0; i < images.length; i++) {
                     image.push(images[i]._doc)
