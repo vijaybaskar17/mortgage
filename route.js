@@ -69,19 +69,21 @@ module.exports = router => {
         console.log(firstname);
         const lastname = req.body.lastname;
         console.log(lastname);
-        const mobilenumber = parseInt(req.body.mobilenumber);
-        console.log(mobilenumber);
+        const phonenumber = parseInt(req.body.phonenumber);
+        console.log(phonenumber);
         const dateofbirth = req.body.dateofbirth;
         console.log(dateofbirth);
-        const emailid = req.body.emailid;
-        console.log(emailid);
+        const email = req.body.email;
+        console.log(email);
         const password = req.body.password;
         console.log(password);
         const retypepassword = req.body.retypepassword;
         console.log(retypepassword);
+        const usertype = req.body.usertype;
+        console.log(usertype);
 
 
-        if (!firstname || !lastname || !mobilenumber|| !dateofbirth || !emailid || !password || !retypepassword) {
+        if (!firstname || !lastname || !phonenumber|| !dateofbirth || !email || !password || !retypepassword || !usertype) {
 
             res
                 .status(400)
@@ -92,7 +94,7 @@ module.exports = router => {
         } else {
 
             registerUser
-                .registerUser(firstname, lastname, mobilenumber,dateofbirth,emailid,password, retypepassword)
+                .registerUser(firstname, lastname, phonenumber,dateofbirth,email,password, retypepassword,usertype)
                 .then(result => {
 
                     res.send({

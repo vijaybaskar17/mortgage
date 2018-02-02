@@ -8,14 +8,15 @@ const registerpageSchema = mongoose.Schema({
 
     firstname: String,
     lastname: String, 
-    mobilenumber : Number,
+    phonenumber : Number,
     dateofbirth : String,
-    emailid : {
+    email : {
         type: String,
         unique: true
     },
     password: String,
     retypepassword: String,
+    usertype:  String
      
 });
 
