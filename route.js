@@ -63,29 +63,25 @@ module.exports = router => {
     }); 
 
 
-    router.post('/registerUser', cors(), (req, res) => {
-
-        const email = req.body.email;
-        console.log(email);
-
-        const password = req.body.password;
-        console.log(password);
+    router.post('/registerUser', cors(), (req, res) => { 
 
         const firstname = req.body.firstname;
         console.log(firstname);
         const lastname = req.body.lastname;
         console.log(lastname);
+        const mobilenumber = parseInt(req.body.mobilenumber);
+        console.log(mobilenumber);
         const dateofbirth = req.body.dateofbirth;
         console.log(dateofbirth);
-        const phonenumber = parseInt(req.body.phonenumber);
-        console.log(phonenumber);
+        const emailid = req.body.emailid;
+        console.log(emailid);
+        const password = req.body.password;
+        console.log(password);
         const retypepassword = req.body.retypepassword;
         console.log(retypepassword);
-        const usertype = req.body.usertype;
-        console.log(usertype);
 
 
-        if (!email || !password || !firstname || !lastname || !dateofbirth || !phonenumber || !retypepassword || !usertype) {
+        if (!firstname || !lastname || !mobilenumber|| !dateofbirth || !emailid || !password || !retypepassword) {
 
             res
                 .status(400)
@@ -96,7 +92,7 @@ module.exports = router => {
         } else {
 
             registerUser
-                .registerUser(email, password, retypepassword, firstname, lastname, dateofbirth, phonenumber,usertype)
+                .registerUser(firstname, lastname, mobilenumber,dateofbirth,emailid,password, retypepassword)
                 .then(result => {
 
                     res.send({
@@ -123,10 +119,10 @@ module.exports = router => {
         const passwordid = req.body.password;
         console.log(passwordid);
        
+       
         login
             .loginUser(emailid, passwordid)
-            .then(result => {
-
+            .then(result => {   
                 console.log("result ===>>>",result.users.usertype)
 
 
@@ -203,8 +199,9 @@ module.exports = router => {
                 "requestid": id
             })
             .then((images) => {
-                console.log("enter in to the photo");
+                console.log("enter in to the photo",images);
                 var image = [];
+                console.log("length",images.length);
                 for (let i = 0; i < images.length; i++) {
                     image.push(images[i]._doc)
 
@@ -508,6 +505,14 @@ module.exports = router => {
                          loanschedule
                              .loanscheduleUser(requestid,transactionstring)
                                 .then(result => {
+                                    if(!requestid) {
+                                        res
+                                        .status(400)
+                                        .json({
+                                            message: 'Invalid Request !'
+                                        });
+                                    } 
+                                    else {
                                     updatetransaction
                                     .updatetransaction(requestid,transactionstring)
                                     .then(function(result) {
@@ -520,9 +525,11 @@ module.exports = router => {
                 
                 
                                 })
+                            
                                 .catch(err => res.status(err.status).json({
                                     message: err.message
                                 }))
+                            }
                             });
                         
                     }); 
@@ -653,14 +660,23 @@ module.exports = router => {
         
         
         .then(result => {
+            if(!requestid) {
+                res
+                .status(400)
+                .json({
+                    message: 'Invalid Request !'
+                });
+            }
 
-                console.log(result);
+                //console.log(result);
+                else {
                 res.send({
                     "message": result.message,
                     "status": true
 
 
                 });
+            }
             })
 
             .catch(err => res.status(err.status).json({
@@ -673,29 +689,29 @@ module.exports = router => {
 
 
 
-                                        router.get("/readIndex", cors(), (req, res) => {
+     router.get("/readIndex", cors(), (req, res) => {
+
+          if (1==1) {
                                             
-                                                    if (1==1) {
+            readIndex
+              .readIndex({})
+                    .then(function(result) {
+                    console.log("result",result);
+                     var firstrequest = result.query[0]
+                       console.log("firstrequest--", firstrequest);
+                       var length = result.query.length;
+                        var lastrequest = result.query[length - 1];
+                          console.log("lastrequest--", lastrequest);
+                          console.log("query",result);
                                             
-                                                        readIndex
-                                                            .readIndex({})
-                                                            .then(function(result) {
-                                                                console.log("result",result);
-                                                                var firstrequest = result.query[0]
-                                                                console.log("firstrequest--", firstrequest);
-                                                                var length = result.query.length;
-                                                                var lastrequest = result.query[length - 1];
-                                                                console.log("lastrequest--", lastrequest);
-                                                                console.log("query",result);
-                                            
-                                                                return res.json({
-                                                                    "status": 200,
-                                                                    "result": result
-                                                                });
-                                                            })
-                                                            .catch(err => res.status(err.status).json({
-                                                                message: err.message
-                                                            }));
+                                       return res.json({
+                                                "status": 200,
+                                                "result": result
+                                                       });
+                                                   })
+                                                .catch(err => res.status(err.status).json({
+                                                     message: err.message
+                                                    }));
                                                     } else {
                                                         res
                                                             .status(401)

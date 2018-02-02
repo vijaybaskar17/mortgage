@@ -5,19 +5,18 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const registerpageSchema = mongoose.Schema({
-    email: {
+
+    firstname: String,
+    lastname: String, 
+    mobilenumber : Number,
+    dateofbirth : String,
+    emailid : {
         type: String,
         unique: true
     },
     password: String,
-    firstname: String,
-    lastname: String,
-   // gender: String,
-    // age: Number,
-    phonenumber: Number,
-    usertype: String,
-    dateofbirth: String,
-    retypepassword: String 
+    retypepassword: String,
+     
 });
 
 
