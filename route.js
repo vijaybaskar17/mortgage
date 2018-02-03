@@ -560,7 +560,7 @@ module.exports = router => {
 
                             router.get("/getloandetails", cors(), (req, res) => {
                                 
-                                        if (1==1) {
+                                        
                                 
                                             var startKey = '000';
                                             console.log("startKey", startKey);
@@ -570,24 +570,16 @@ module.exports = router => {
                                             getloandetails
                                                 .getloandetails(startKey, endKey)
                                                 .then(function(result) {
-                                                    console.log("  result.query1234..>>>", result.query.length);
-                                                    return res.json({
-                                                        "status": 200,
-                                                        "readAllRequest": result.query
-                                                    });
+                                                    console.log("  result.query1234..>>>", result.query);
+                                                    res.status(result.status).json({message:result.query})
                                                 })
                                                 .catch(err => res.status(err.status).json({
                                                     message: err.message
                                                 }));
-                                        } else {
-                                            res
-                                                .status(401)
-                                                .json({
-                                                    "status": false,
-                                                    message: 'cant fetch data !'
-                                                });
-                                        }
+                                       
+
                                     });
+
 
                                    /* router.post('/creditscore', cors(), (req, res) => {
                                         console.log("entering in to the update trans",req.body);
@@ -653,6 +645,7 @@ module.exports = router => {
          var body = req.body
         var requestid = body.id;
       var transactionstring = body.transactionstring;
+      
                                                 
   console.log("entering in to the upda trans",requestid,transactionstring);
 

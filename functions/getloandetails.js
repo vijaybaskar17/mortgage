@@ -1,6 +1,6 @@
 'use strict';
 var bcSdk = require('../fabcar/query');
-const user = require('../models/loandetails');
+//const user = require('../models/loandetails');
 
 
 exports.getloandetails = (startKey,endKey) => {
@@ -16,8 +16,7 @@ exports.getloandetails = (startKey,endKey) => {
         })
 
        .then((requestarray) => {
-            console.log("data in requestArray" + requestarray)
-
+            console.log("data in requestArray" + JSON.stringify (requestarray)) 
            return resolve({
                 status: 200,
                 query: requestarray

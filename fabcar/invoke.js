@@ -318,7 +318,7 @@ var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
     channel_id: 'mychannel',
-    chaincode_id: 'mortgagechaincode',
+    chaincode_id: 'mortgagechaincode4',
     peer_url: 'grpc://localhost:7051',
     event_url: 'grpc://localhost:7053',
     orderer_url: 'grpc://localhost:7050'
@@ -496,6 +496,7 @@ function updatetransaction(params) {
         console.log("updatedetails", params.updatedetails);
         var str = JSON.stringify(updatedetails.transactionstring)
         console.log("line number  58---->", str);
+        console.log("lkslkalkslk----->",updatedetails.requestid)
         tx_id = client.newTransactionID();
         console.log("Assigning transaction_id: ", tx_id._transaction_id);
         // createCar - requires 5 args, ex: args: ['CAR11', 'Honda', 'Accord', 'Black', 'Tom'],

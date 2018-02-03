@@ -12,7 +12,7 @@ const user = require('../models/loandetails');
                 })
         
                 .then((requestarray) => {
-                    console.log("data in requestArray " + requestarray)
+                    console.log("data in requestArray " + JSON.stringify (requestarray))
         
                     return resolve({
                         status: 200,
