@@ -241,6 +241,7 @@ module.exports = router => {
 
 
         //  loan.loandetails(requestid, transactionstring)
+        if (checkToken(req)) {
 
         savetransaction.savetransaction(requestid, transactionstring)
 
@@ -261,6 +262,14 @@ module.exports = router => {
             }).json({
                 status: err.status
             }));
+        }
+        else {
+            res
+            .status(401)
+            .json({
+                message: 'cant fetch data !'
+            });
+        }
 
     });
 
@@ -430,7 +439,8 @@ module.exports = router => {
     router.get("/readRequest", (req, res) => {
         //    var requestList = [];
 
-        if (1 == 1) {
+        if (checkToken(req)) {
+            
 
             const requestid = checkToken(req);
             console.log("requestid1", requestid);
@@ -546,6 +556,8 @@ module.exports = router => {
 
     router.post('/getloanschedule', cors(), (req, res) => {
 
+        if (checkToken(req)) {
+            
         console.log(req.body);
         console.log(req.body.requestid);
         var requestid = req.body.requestid;
@@ -562,7 +574,13 @@ module.exports = router => {
             .catch(err => res.status(err.status).json({
                 message: err.message
             }));
-
+        }
+        else {
+            res.status(401).json({
+                "status": false,
+                message: 'cant fetch data !'
+            });
+        }
 
     });
 
@@ -575,6 +593,7 @@ module.exports = router => {
         var endKey = '999';
         console.log("endKey--", endKey);
 
+        if (checkToken(req)) {
         getloandetails
             .getloandetails(startKey, endKey)
             .then(function(result) {
@@ -586,6 +605,14 @@ module.exports = router => {
             .catch(err => res.status(err.status).json({
                 message: err.message
             }));
+        }
+        else {
+
+            res.status(401).json({
+                "status": false,
+                message: 'cant fetch data !'
+            });
+        }
 
 
     });
@@ -655,12 +682,9 @@ module.exports = router => {
         var body = req.body
         var requestid = body.id;
         var transactionstring = body.transactionstring;
-
-
         console.log("entering in to the upda trans", requestid, transactionstring);
 
-
-
+        if (checkToken(req)) {
         updatetransaction.updatetransaction(requestid, transactionstring)
 
 
@@ -689,14 +713,20 @@ module.exports = router => {
             }).json({
                 status: err.status
             }));
-
+        }
+        else {
+            res.status(401).json({
+                "status": false,
+                message: 'cant fetch data !'
+            });
+        }
     });
 
 
 
     router.get("/readIndex", cors(), (req, res) => {
 
-        if (1 == 1) {
+        if (checkToken(req))  {
 
             readIndex
                 .readIndex({})
@@ -726,70 +756,9 @@ module.exports = router => {
                 });
         }
     });
-    
-    router.post('/loanscheduleUser', cors(), (req, res) => {
-
-        console.log("ui....123>>>", req.body);
-        const requestid = req.body.requestid;
-        console.log(requestid);
-        const transactionstring = req.body.transactionstring;
-        console.log(transactionstring);
-
-        loanschedule
-            .loanscheduleUser(requestid, transactionstring)
-
-            .then(result => {
-
-                updatetransaction
-                    .updatetransaction(requestid, transactionstring)
-                    .then(function(result) {
-                        console.log("result....", result)
-                        function calculate() {
-                            var principal = document.loandata.principal.value;
-                            var interest = document.loandata.interest.value / 100 / 12;
-                            var payments = document.loandata.years.value * 12;
-                            console.log("payments123....",payments);
-                        
-                            var x = Math.pow(1 + interest, payments);
-                            var monthly = (principal*x*interest)/(x-1);
-                        
-                        
-                            if (!isNaN(monthly) && 
-                                (monthly != Number.POSITIVE_INFINITY) &&
-                                (monthly != Number.NEGATIVE_INFINITY)) {
-                        
-                                document.loandata.payment.value = round(monthly);
-                                document.loandata.total.value = round(monthly * payments)
-                                document.loandata.totalinterest.value = 
-                                    round((monthly * payments) - principal);
-                                    res.send({
-                                        "message": "loanschedule created successfully",
-                                        "status": true,
-                
-                                    });
-                            }
-                            else {
-                                // document.loandata.payment.value = "";
-                                // document.loandata.total.value = "";
-                                // document.loandata.totalinterest.value = "";
-
-                            }
-                           
-                        }
-                        
-                        function round(x) {
-                          return Math.round(x*100)/100;
-                        } 
-                        
-                });
-                
-            });
-
-    });
-
     function checkToken(req) {
 
-        const token = req.headers['authorization'];
+        const token = req.headers['X-access-token'];
 
         if (token) {
 
