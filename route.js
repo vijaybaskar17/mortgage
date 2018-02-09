@@ -20,6 +20,7 @@ const readIndex = require('./functions/readIndex');
 
 var cors = require('cors');
 var mongoose = require('mongoose');
+var crypto = require('crypto');
 
 var Promises = require('promise');
 var cloudinary = require('cloudinary').v2;
@@ -82,6 +83,8 @@ module.exports = router => {
         console.log(retypepassword);
         const usertype = req.body.usertype;
         console.log(usertype);
+        const rapidID = crypto.createHash('sha256').update(email.concat(phonenumber)).digest('base64');
+        console.log("rapidid",rapidID);
 
 
         if (!firstname || !lastname || !phonenumber || !dateofbirth || !email || !password || !retypepassword || !usertype) {
@@ -95,7 +98,7 @@ module.exports = router => {
         } else {
 
             registerUser
-                .registerUser(firstname, lastname, phonenumber, dateofbirth, email, password, retypepassword, usertype)
+                .registerUser(firstname, lastname, phonenumber, dateofbirth, email, password, retypepassword, usertype,rapidID)
                 .then(result => {
 
                     res.send({
@@ -238,10 +241,15 @@ module.exports = router => {
         console.log("requestid" + requestid)
         var transactionstring = req.body.transactionstring;
         console.log("line number 212-------->", transactionstring)
-
+        if (!checkToken(req)) {
+            console.log("invalid token")
+            return res.status(401).json({
+                message: "invalid token"
+            })
+        }
 
         //  loan.loandetails(requestid, transactionstring)
-        if (checkToken(req)) {
+        {
 
         savetransaction.savetransaction(requestid, transactionstring)
 
@@ -263,13 +271,7 @@ module.exports = router => {
                 status: err.status
             }));
         }
-        else {
-            res
-            .status(401)
-            .json({
-                message: 'cant fetch data !'
-            });
-        }
+       
 
     });
 
@@ -297,7 +299,7 @@ module.exports = router => {
     router.get('/getparticulardetails', cors(), (req, res) => {
         if (1 == 1) {
 
-            const requestid1 = checkToken(req);
+            const requestid1 = checkToken1(req);
             console.log("requestid1", requestid1);
             const requestid = requestid1;
 
@@ -593,7 +595,14 @@ module.exports = router => {
         var endKey = '999';
         console.log("endKey--", endKey);
 
-        if (checkToken(req)) {
+
+        if (!checkToken(req)) {
+            console.log("invalid token")
+            return res.status(401).json({
+                message: "invalid token"
+            })
+        }
+        
         getloandetails
             .getloandetails(startKey, endKey)
             .then(function(result) {
@@ -605,15 +614,6 @@ module.exports = router => {
             .catch(err => res.status(err.status).json({
                 message: err.message
             }));
-        }
-        else {
-
-            res.status(401).json({
-                "status": false,
-                message: 'cant fetch data !'
-            });
-        }
-
 
     });
 
@@ -758,7 +758,8 @@ module.exports = router => {
     });
     function checkToken(req) {
 
-        const token = req.headers['X-access-token'];
+        const token = req.headers['x-access-token'];
+        console.log("mytoken......",token)
 
         if (token) {
 
@@ -774,3 +775,20 @@ module.exports = router => {
     }
 
 }
+
+function checkToken1(req) {
+    
+            const token = req.headers['authorization'];
+    
+            if (token) {
+    
+                try {
+                    (token.length != 0)
+                    return token
+                } catch (err) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }

@@ -16,7 +16,8 @@ const registerpageSchema = mongoose.Schema({
     },
     password: String,
     retypepassword: String,
-    usertype:  String
+    usertype:  String,
+    rapidID: String
      
 });
 
