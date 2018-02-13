@@ -1,10 +1,10 @@
 
 'use strict';
 
-const user = require('../models/registerpage');  
+const user = require('../models/register');  
 // const user = require('../models/fetchdata');
 
-exports.registerUser = (firstname, lastname, phonenumber,dateofbirth,email,password, retypepassword,usertype, rapidID) => new Promise((resolve, reject) => {
+exports.registerUser = (firstname, lastname, phonenumber,dateofbirth,email,password, retypepassword,usertype, userId) => new Promise((resolve, reject) => {
 
     const newUser = new user({
 
@@ -16,7 +16,7 @@ exports.registerUser = (firstname, lastname, phonenumber,dateofbirth,email,passw
         password : password, 
         retypepassword : retypepassword,
         usertype : usertype,
-        rapidID: rapidID
+        userId:userId
     });
     newUser
         .save()

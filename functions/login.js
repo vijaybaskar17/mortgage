@@ -1,6 +1,6 @@
 'use strict';
 
-const user = require('../models/registerpage');
+const user = require('../models/register');
 // const user = require('../models/fetchdata');
 
 exports.loginUser = (email, password,usertype) =>

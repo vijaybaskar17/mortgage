@@ -22,183 +22,272 @@
  * Writing Your First Blockchain Application
  */
 
-package main
-
+/*package main
 /* Imports
  * 4 utility libraries for formatting, handling bytes, reading and writing JSON, and string manipulation
  * 2 specific Hyperledger Fabric specific libraries for Smart Contracts
  */
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"strconv"
+ package main
+ import (
+     "bytes"
+     "encoding/json"
+     "fmt"
+     "time"
+     "github.com/hyperledger/fabric/core/chaincode/shim"
+     sc "github.com/hyperledger/fabric/protos/peer"
+ )
+  type IndexItem struct {
+    rapidID string    `json:"rapidID"`
+	 Requestid string    `json:"requestid"`
+     
+  }
+ type Request struct {
+    
+     Transactionlist []Transaction `json:"transactionlist"`
+ }
+ type Transaction struct {
+     TrnsactionDetails map[string]string `json:"transactiondetails"`
+ }
+  
+ type SimpleChaincode struct {
+ }
+ func (t *SimpleChaincode) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
+       var index []IndexItem
+     jsonAsBytes, err := json.Marshal(index)
+     if err != nil {
+         fmt.Println("Could not marshal index object", err)
+         return shim.Error("error")
+     }
+     err = APIstub.PutState("index", jsonAsBytes)
+     if err != nil {
+         fmt.Println("Could not save updated index ", err)
+         return shim.Error("error")
+     }
+     return shim.Success(nil)
+ }
+ func (t *SimpleChaincode) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
+     function, args := APIstub.GetFunctionAndParameters()
+     switch function {
+     case "newRequest":
+         return t.newRequest(APIstub, args)
+     case "updateRequest":
+         return t.updateRequest(APIstub, args)
+     case "readIndex":
+         return t.readIndex(APIstub, args)
+     case "readRequest":
+         return t.readRequest(APIstub, args)
+     case "readAllRequest":
+     return t.readAllRequest(APIstub,args)
+    case "getHistory":
+        return t.getHistory(APIstub,args)
 
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	sc "github.com/hyperledger/fabric/protos/peer"
-)
-
-// Define the Smart Contract structure
-type SmartContract struct {
-}
-
-// Define the car structure, with 4 properties.  Structure tags are used by encoding/json library
-type Car struct {
-	Make   string `json:"make"`
-	Model  string `json:"model"`
-	Colour string `json:"colour"`
-	Owner  string `json:"owner"`
-}
-
-/*
- * The Init method is called when the Smart Contract "fabcar" is instantiated by the blockchain network
- * Best practice is to have any Ledger initialization in separate function -- see initLedger()
- */
-func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
-	return shim.Success(nil)
-}
-
-/*
- * The Invoke method is called as a result of an application request to run the Smart Contract "fabcar"
- * The calling application program has also specified the particular smart contract function to be called, with arguments
- */
-func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
-
-	// Retrieve the requested Smart Contract function and arguments
-	function, args := APIstub.GetFunctionAndParameters()
-	// Route to the appropriate handler function to interact with the ledger appropriately
-	if function == "queryCar" {
-		return s.queryCar(APIstub, args)
-	} else if function == "initLedger" {
-		return s.initLedger(APIstub)
-	} else if function == "createCar" {
-		return s.createCar(APIstub, args)
-	} else if function == "queryAllCars" {
-		return s.queryAllCars(APIstub)
-	} else if function == "changeCarOwner" {
-		return s.changeCarOwner(APIstub, args)
-	}
-
-	return shim.Error("Invalid Smart Contract function name.")
-}
-
-func (s *SmartContract) queryCar(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 1")
-	}
-
-	carAsBytes, _ := APIstub.GetState(args[0])
-	return shim.Success(carAsBytes)
-}
-
-func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
-	cars := []Car{
-		Car{Make: "Toyota", Model: "Prius", Colour: "blue", Owner: "Tomoko"},
-		Car{Make: "Ford", Model: "Mustang", Colour: "red", Owner: "Brad"},
-		Car{Make: "Hyundai", Model: "Tucson", Colour: "green", Owner: "Jin Soo"},
-		Car{Make: "Volkswagen", Model: "Passat", Colour: "yellow", Owner: "Max"},
-		Car{Make: "Tesla", Model: "S", Colour: "black", Owner: "Adriana"},
-		Car{Make: "Peugeot", Model: "205", Colour: "purple", Owner: "Michel"},
-		Car{Make: "Chery", Model: "S22L", Colour: "white", Owner: "Aarav"},
-		Car{Make: "Fiat", Model: "Punto", Colour: "violet", Owner: "Pari"},
-		Car{Make: "Tata", Model: "Nano", Colour: "indigo", Owner: "Valeria"},
-		Car{Make: "Holden", Model: "Barina", Colour: "brown", Owner: "Shotaro"},
-	}
-
-	i := 0
-	for i < len(cars) {
-		fmt.Println("i is ", i)
-		carAsBytes, _ := json.Marshal(cars[i])
-		APIstub.PutState("CAR"+strconv.Itoa(i), carAsBytes)
-		fmt.Println("Added", cars[i])
-		i = i + 1
-	}
-
-	return shim.Success(nil)
-}
-
-func (s *SmartContract) createCar(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 5 {
-		return shim.Error("Incorrect number of arguments. Expecting 5")
-	}
-
-	var car = Car{Make: args[1], Model: args[2], Colour: args[3], Owner: args[4]}
-
-	carAsBytes, _ := json.Marshal(car)
-	APIstub.PutState(args[0], carAsBytes)
-
-	return shim.Success(nil)
-}
-
-func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Response {
-
-	startKey := "CAR0"
-	endKey := "CAR999"
-
-	resultsIterator, err := APIstub.GetStateByRange(startKey, endKey)
+     }
+     return shim.Error("Invalid Smart Contract function name.")
+ }
+ //1.newrequest   (#user,#transactionlist)
+ func (t *SimpleChaincode) newRequest(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+     // creating new request
+     // {requestid : 1234, involvedParties:['supplier', 'logistics', 'manufacturer','insurance']}
+     fmt.Println("creating new newRequest")
+     if len(args) < 3 {
+         fmt.Println("Expecting three Argument")
+         return shim.Error("Expected three arguments for new Request")
+     }
+    //  var request Request
+    //  var indexItem IndexItem
+    //  var transaction Transaction
+    //  var index []IndexItem
+    
+	 var rapidId = args[0]
+	 var requestid = args[1]
+     var transactionString = args[0]
+     
+     fmt.Println(rapidId)
+    fmt.Println(requestid)
+    err := APIstub.PutState(rapidId,[]byte(transactionString))
+     
 	if err != nil {
-		return shim.Error(err.Error())
+		fmt.Println("Could not save user to ledger", err)
+		//return nil, err
+		return shim.Error("error")
 	}
-	defer resultsIterator.Close()
+		
 
-	// buffer is a JSON array containing QueryResults
-	var buffer bytes.Buffer
-	buffer.WriteString("[")
 
-	bArrayMemberAlreadyWritten := false
-	for resultsIterator.HasNext() {
-		queryResponse, err := resultsIterator.Next()
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		// Add a comma before array members, suppress it for the first array member
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
-		}
-		buffer.WriteString("{\"Key\":")
-		buffer.WriteString("\"")
-		buffer.WriteString(queryResponse.Key)
-		buffer.WriteString("\"")
 
-		buffer.WriteString(", \"Record\":")
-		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(queryResponse.Value))
-		buffer.WriteString("}")
-		bArrayMemberAlreadyWritten = true
+	jsonAsBytes, err := json.Marshal(rapidId)
+	if err != nil {
+		fmt.Println("Could not marshal index object", err)
+		return shim.Error("Could not marshal index object")
 	}
-	buffer.WriteString("]")
-
-	fmt.Printf("- queryAllCars:\n%s\n", buffer.String())
-
-	return shim.Success(buffer.Bytes())
-}
-
-func (s *SmartContract) changeCarOwner(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2")
+	err = APIstub.PutState("index", jsonAsBytes)
+	if err != nil {
+		fmt.Println("Could not save updated index ", err)
+		return shim.Error("error")
 	}
-
-	carAsBytes, _ := APIstub.GetState(args[0])
-	car := Car{}
-
-	json.Unmarshal(carAsBytes, &car)
-	car.Owner = args[1]
-
-	carAsBytes, _ = json.Marshal(car)
-	APIstub.PutState(args[0], carAsBytes)
-
+	fmt.Println("index", jsonAsBytes)
+	fmt.Println("Successfully saved")
 	return shim.Success(nil)
 }
+ //2.updateRequest
+ func (t *SimpleChaincode) updateRequest(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+     // creating new request
+     // {requestid : 1234, involvedParties:['supplier', 'logistics', 'manufacturer','insurance']}
+     fmt.Println("creating new newRequest")
+     if len(args) < 3 {
+         fmt.Println("Expecting three Argument")
+         return shim.Error("Expected three arguments for new Request")
+     }
+    //  var transaction Transaction
+    //  var request Request
+    //  var indexItem IndexItem
+    //  var index []IndexItem
+   
+     var rapidID = args[0]
+	 var requestid  = args[1]
+     var transactionString = args[2]
 
-// The main function is only relevant in unit test mode. Only included here for completeness.
-func main() {
-
-	// Create a new Smart Contract
-	err := shim.Start(new(SmartContract))
+    fmt.Println(rapidID)
+    fmt.Println(requestid)
+     
+	err := APIstub.PutState(rapidID,[]byte(transactionString))
+     
 	if err != nil {
-		fmt.Printf("Error creating new Smart Contract: %s", err)
+		fmt.Println("Could not save user to ledger", err)
+		//return nil, err
+		return shim.Error("error")
 	}
+		
+
+
+
+	jsonAsBytes, err := json.Marshal(rapidID)
+	if err != nil {
+		fmt.Println("Could not marshal index object", err)
+		return shim.Error("Could not marshal index object")
+	}
+	err = APIstub.PutState("index", jsonAsBytes)
+	if err != nil {
+		fmt.Println("Could not save updated index ", err)
+		return shim.Error("error")
+	}
+	fmt.Println("index", jsonAsBytes)
+	fmt.Println("Successfully saved")
+	return shim.Success(nil)
 }
+ //3. readRequest    (#user) Query
+ func (t *SimpleChaincode) readIndex(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+     // querying the request
+     //var index []IndexItem
+     indexAsBytes, _ := APIstub.GetState("index")
+     //json.Unmarshal(reqAsBytes, &index)
+     return shim.Success(indexAsBytes)
+ }
+ //4.readtransactionList  (#user) Query
+ func (t *SimpleChaincode) readRequest(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+     // querying the request
+     //var request Request
+     fmt.Println("Reading the request data for ", args[0])
+     reqAsBytes, _ := APIstub.GetState(args[0])
+     //json.Unmarshal(reqAsBytes, &request)
+     return shim.Success(reqAsBytes)
+ }
+ //5.readAlldetails
+ func (t *SimpleChaincode) readAllRequest(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+    //startKey := args[0]
+    //endKey := args[1]
+    fmt.Println("0",args[0])
+    fmt.Println("1",args[1])
+
+  resultsIterator, err := APIstub.GetStateByRange( args[0], args[1])
+   if err != nil {
+    return shim.Error(err.Error())
+}
+defer resultsIterator.Close()
+
+// buffer is a JSON array containing QueryResults
+var buffer bytes.Buffer
+buffer.WriteString("[")
+
+bArrayMemberAlreadyWritten := false
+for resultsIterator.HasNext() {
+    queryResponse, err := resultsIterator.Next()
+    if err != nil {
+        return shim.Error(err.Error())
+    }
+    // Add a comma before array members, suppress it for the first array member
+    if bArrayMemberAlreadyWritten == true {
+        buffer.WriteString(",")
+    }
+    buffer.WriteString("{\"Key\":")
+    buffer.WriteString("\"")
+    buffer.WriteString(queryResponse.Key)
+    buffer.WriteString("\"")
+
+    buffer.WriteString(", \"Record\":")
+    // Record is a JSON object, so we write as-is
+    buffer.WriteString(string(queryResponse.Value))
+    buffer.WriteString("}")
+    bArrayMemberAlreadyWritten = true
+}
+buffer.WriteString("]")
+
+fmt.Printf("- alldata:\n%s\n", buffer.String())
+
+return shim.Success(buffer.Bytes())
+}
+
+ func (t *SimpleChaincode) getHistory(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+    
+       fmt.Println("0",args[0])
+    
+      interatorArray, err := APIstub.GetHistoryForKey(args[0])
+        if err != nil {
+            return shim.Error(err.Error())
+        }
+        defer interatorArray.Close()
+    
+      // buffer is a JSON array containing QueryResults
+    var buffer bytes.Buffer
+    buffer.WriteString("[")
+    
+    bArrayMemberAlreadyWritten := false
+    for interatorArray.HasNext() {
+        queryResponse, err := interatorArray.Next()
+        if err != nil {
+            return shim.Error(err.Error())
+        }
+        // Add a comma before array members, suppress it for the first array member
+        if bArrayMemberAlreadyWritten == true {
+            buffer.WriteString(",")
+        }
+        //  buffer.WriteString("{\"Key\":")
+        //  buffer.WriteString("\"")
+        //  //buffer.WriteString(queryResponse.Key)
+        // buffer.WriteString("\"")
+        fmt.Println("query response ===============>",queryResponse)
+        buffer.WriteString("{ \"Records\":")
+        // Record is a JSON object, so we write as-is
+        buffer.WriteString(string(queryResponse.Value))
+        buffer.WriteString("}")
+        bArrayMemberAlreadyWritten = true
+    }
+    buffer.WriteString("]")
+    
+    fmt.Printf("- alldata:\n%s\n", buffer.String())
+    
+    return shim.Success(buffer.Bytes())
+    } 
+ func makeTimestamp() string {
+     t := time.Now()
+     return t.Format(("2006-01-02T15:04:05.999999-07:00")) 
+     //return time.Now().UnixNano() / (int64(time.Millisecond)/int64(time.Nanosecond))
+ }
+ // The main function is only relevant in unit test mode. Only included here for completeness.
+ func main() {
+     // Create a new Smart Contract
+     err := shim.Start(new(SimpleChaincode))
+     if err != nil {
+         fmt.Printf("Error creating new Smart Contract: %s", err)
+     }
+ }

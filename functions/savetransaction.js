@@ -4,13 +4,13 @@
 var bcSdk = require('../fabcar/invoke');
 const  loanpage = require('../models/loandetails');
 
-exports.savetransaction = (requestid,transactionstring) => {
+exports.savetransaction = (userId,transactionstring) => {
     return new Promise((resolve, reject) => {
 
     const newloanpage =new loanpage ({
-     
-       requestid: requestid,
-       transactionstring: transactionstring
+
+        userId:userId,
+       transactionstring: transactionstring,
         
         
    });

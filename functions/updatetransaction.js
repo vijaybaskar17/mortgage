@@ -4,11 +4,11 @@
 var bcSdk = require('../fabcar/invoke.js');
 const  updatepage = require('../models/update');
 
-exports.updatetransaction = (requestid,transactionstring) => {
+exports.updatetransaction = (userId,transactionstring) => {
 return new Promise((resolve, reject) => {
 
     const newupdatepage= new updatepage ({
-        requestid:requestid,
+        userId:userId,
         transactionstring: transactionstring,
         
     });

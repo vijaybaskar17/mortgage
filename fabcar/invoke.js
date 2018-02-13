@@ -318,7 +318,7 @@ var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
     channel_id: 'mychannel',
-    chaincode_id: 'mortgagechaincode4',
+    chaincode_id: 'mortgagechaincode14',
     peer_url: 'grpc://localhost:7051',
     event_url: 'grpc://localhost:7053',
     orderer_url: 'grpc://localhost:7050'
@@ -355,6 +355,7 @@ function savetransaction(params) {
         return;
     }).then(() => {
         TransactionDetails = params.TransactionDetails;
+        console.log("userId123...>>>>",TransactionDetails.userId)
 
         var str = JSON.stringify(TransactionDetails.transactionstring)
         console.log("line number  58---->", str);
@@ -367,14 +368,17 @@ function savetransaction(params) {
             targets: targets,
             chaincodeId: options.chaincode_id,
             fcn: 'newRequest',
-            args: [TransactionDetails.requestid, str],
+            args: [TransactionDetails.userId,str],
             chainId: options.channel_id,
             txId: tx_id
         };
         return channel.sendTransactionProposal(request);
     }).then((results) => {
+
         var proposalResponses = results[0];
+       
         var proposal = results[1];
+       
         var header = results[2];
         let isProposalGood = false;
         if (proposalResponses && proposalResponses[0].response &&
@@ -496,7 +500,7 @@ function updatetransaction(params) {
         console.log("updatedetails", params.updatedetails);
         var str = JSON.stringify(updatedetails.transactionstring)
         console.log("line number  58---->", str);
-        console.log("lkslkalkslk----->",updatedetails.requestid)
+        console.log("lkslkalkslk----->",updatedetails.userId)
         tx_id = client.newTransactionID();
         console.log("Assigning transaction_id: ", tx_id._transaction_id);
         // createCar - requires 5 args, ex: args: ['CAR11', 'Honda', 'Accord', 'Black', 'Tom'],
@@ -506,7 +510,7 @@ function updatetransaction(params) {
             targets: targets,
             chaincodeId: options.chaincode_id,
             fcn: 'updateRequest',
-            args: [updatedetails.requestid, str],
+            args: [updatedetails.userId, str],
             chainId: options.channel_id,
             txId: tx_id
         };

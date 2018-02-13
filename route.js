@@ -2,7 +2,6 @@
 
 const creditscore = require('./functions/creditscore');
 const login = require('./functions/login');
-const jwt = require('jsonwebtoken');
 const registerUser = require('./functions/registerUser');
 const loan = require('./functions/loan');
 const getloandetails = require('./functions/getloandetails');
@@ -16,11 +15,11 @@ const getloanschedule = require('./functions/getloanschedule');
 const approveloan = require('./functions/approveloan');
 const updatetransaction = require('./functions/updatetransaction');
 const savetransaction = require('./functions/savetransaction');
+const register = require('./models/register');
 const readIndex = require('./functions/readIndex');
 
 var cors = require('cors');
 var mongoose = require('mongoose');
-var crypto = require('crypto');
 
 var Promises = require('promise');
 var cloudinary = require('cloudinary').v2;
@@ -34,20 +33,20 @@ var path = require('path');
 
 module.exports = router => {
 
-    router.post('/creditscore', cors(), (req, res) => {
+   router.post('/creditscore', cors(), (req, res) => {
 
-        console.log("credit....>>>", req.body);
+        console.log("credit....>>>",req.body);
         console.log("entering register function in functions ");
         const requestid = parseInt(req.body.records);
         console.log(requestid);
-
+       
 
 
         creditscore
             .creditscore(requestid)
             .then(result => {
 
-                console.log("res123----", result);
+                console.log("res123----",result);
                 res.status(result.status).json({
                     message: "credit score generated ",
                     creditscore: result.creditscore
@@ -62,10 +61,10 @@ module.exports = router => {
                 status: err.status
             }));
 
-    });
+    }); 
 
 
-    router.post('/registerUser', cors(), (req, res) => {
+    router.post('/registerUser', cors(), (req, res) => { 
 
         const firstname = req.body.firstname;
         console.log(firstname);
@@ -83,11 +82,14 @@ module.exports = router => {
         console.log(retypepassword);
         const usertype = req.body.usertype;
         console.log(usertype);
-        const rapidID = crypto.createHash('sha256').update(email.concat(phonenumber)).digest('base64');
-        console.log("rapidid",rapidID);
+        var  userId = "";
+        var possible = "0123456789674736728367382772898366377267489457636736273448732432642326734"
+        for (var i = 0; i < 3; i++)
+            userId += (possible.charAt(Math.floor(Math.random() * possible.length))).toString();
+        console.log("userId" + userId)
 
 
-        if (!firstname || !lastname || !phonenumber || !dateofbirth || !email || !password || !retypepassword || !usertype) {
+        if (!firstname || !lastname || !phonenumber|| !dateofbirth || !email || !password || !retypepassword || !usertype || !userId) {
 
             res
                 .status(400)
@@ -98,7 +100,7 @@ module.exports = router => {
         } else {
 
             registerUser
-                .registerUser(firstname, lastname, phonenumber, dateofbirth, email, password, retypepassword, usertype,rapidID)
+                .registerUser(firstname, lastname, phonenumber,dateofbirth,email,password, retypepassword,usertype,userId)
                 .then(result => {
 
                     res.send({
@@ -128,21 +130,17 @@ module.exports = router => {
        
         login
             .loginUser(emailid, passwordid)
-            .then(result => { 
-                require('crypto').randomBytes(48, function(err, buffer) {
-                    var token = buffer.toString('hex');
-                    //expiresIn: 60000000000;
-                    console.log("token....123>>>",token);
-                    console.log("result ===>>>",result.users.usertype)
-                    
-                    
-                                    res.send({
-                                        "message": "Login Successful",
-                                        "status": true,
-                                        "usertype":result.users.usertype,
-                                        "token":token
-                                    });
-                  });
+            .then(result => {   
+                console.log("result ===>>>",result.users.usertype)
+
+
+                res.send({
+                    "message": "Login Successful",
+                    "status": true,
+                    "usertype":result.users.usertype,
+                    "userId":result.users.userId
+
+                });
 
             })
             .catch(err => res.status(err.status).json({
@@ -157,10 +155,9 @@ module.exports = router => {
         api_key: '188595956976777',
         api_secret: 'F7ajPhx0uHdohqfbjq2ykBZcMiw'
     });
-  
 
     router.post('/UploadDocs', multipartMiddleware, function(req, res, next) {
-        console.log("req123..", req.body)
+        console.log("req123..",req.body)
         const id = req.query['requestid'];
         console.log(id)
         var photo = new Photo(req.body);
@@ -197,23 +194,23 @@ module.exports = router => {
             });
     });
 
-    router.get('/images/id', cors(), (req, res) => {
-
-        console.log("req123..", req.body)
+    router.get('/images/id', cors(), (req, res) => { 
+     
+        console.log("req123..",req.body)
         const id = req.query['requestid'];
         console.log(id)
-
-        //     console.log("req123...",req.body)
-        //     const id = req.body.requestid
-        //    console.log("id" + id);
+  
+    //     console.log("req123...",req.body)
+    //     const id = req.body.requestid
+    //    console.log("id" + id);
         Photo
             .find({
                 "requestid": id
             })
             .then((images) => {
-                console.log("enter in to the photo", images);
+                console.log("enter in to the photo",images);
                 var image = [];
-                console.log("length", images.length);
+                console.log("length",images.length);
                 for (let i = 0; i < images.length; i++) {
                     image.push(images[i]._doc)
 
@@ -231,7 +228,7 @@ module.exports = router => {
 
 
     router.post('/loandetails', cors(), (req, res) => {
-        console.log("body========>", req.body)
+        console.log("body========>",req.body)
         // const requestid = req.body.requestid;
         // console.log("line number 203----->",requestid);
         var requestid = "";
@@ -239,21 +236,18 @@ module.exports = router => {
         for (var i = 0; i < 3; i++)
             requestid += (possible.charAt(Math.floor(Math.random() * possible.length))).toString();
         console.log("requestid" + requestid)
-        var transactionstring = req.body.transactionstring;
-        console.log("line number 212-------->", transactionstring)
-        if (!checkToken(req)) {
-            console.log("invalid token")
-            return res.status(401).json({
-                message: "invalid token"
-            })
-        }
+        const userId = req.body.userId;
+        console.log("userId",userId);
+        var transactionstring =req.body.transactionstring;
+        console.log("line number 212-------->",transactionstring)
+    
+
 
         //  loan.loandetails(requestid, transactionstring)
-        {
 
-        savetransaction.savetransaction(requestid, transactionstring)
-
-            .then(result => {
+        savetransaction.savetransaction(userId,transactionstring)
+            
+        .then(result => {
 
                 console.log(result);
                 res.send({
@@ -270,117 +264,80 @@ module.exports = router => {
             }).json({
                 status: err.status
             }));
-        }
+
+    });
+
+ router.get('/getdetailsuser', cors(), (req, res) => {
        
-
-    });
-
-    router.get('/getdetailsuser', cors(), (req, res) => {
-
         getdetailsuser
-            .getdetailsuser()
+                .getdetailsuser()
 
-            .then(function(result) {
-                console.log("result---", result)
-
-                res.send({
-                    status: result.status,
-                    message: result.usr
-                });
-            })
-            .catch(err => res.status(err.status).json({
-                message: err.message
-            }));
-
-
-    });
-
-
-    router.get('/getparticulardetails', cors(), (req, res) => {
-        if (1 == 1) {
-
-            const requestid1 = checkToken1(req);
-            console.log("requestid1", requestid1);
-            const requestid = requestid1;
-
-
-            getparticulardetails.getparticulardetails(requestid)
                 .then(function(result) {
-                    console.log("requestid1", requestid1)
-                    console.log("result.query", result.query)
-                    return res.json({
-                        "status": 200,
-                        "message": result.query
+                    console.log("result---",result)
+
+                    res.send({
+                        status: result.status,
+                        message: result.usr
                     });
                 })
                 .catch(err => res.status(err.status).json({
                     message: err.message
                 }));
-        } else {
-            res.status(401).json({
-                "status": false,
-                message: 'cant fetch data !'
-            });
-        }
-    });
-
-    router.get('/getHistory', (req, res) => {
-        console.log("requ...123>>>ui>>>", req.body);
-        const requestid1 = checkToken(req);
-        console.log("requestid1", requestid1);
-        const requestid = requestid1;
-
-        getHistory.getHistory(requestid)
-            .then(result => {
-                console.log("result....123>>>", result);
-                res.status(result.status).json({
-                    result: result.docs,
-                    Date: result.recorddate,
-                    Time: result.recordtime,
-                    Date1: result.recorddate1,
-                    Time1: result.recordtime1,
-                    Date2: result.recorddate2,
-                    Time2: result.recordtime2,
-                    Date3: result.recorddate3,
-                    Time3: result.recordtime3,
-                    Date4: result.recorddate4,
-                    Time4: result.recordtime4,
-                    Date5: result.recorddate5,
-                    Time5: result.recordtime5,
-                    Date6: result.recorddate6,
-                    Time6: result.recordtime6,
-                    Date7: result.recorddate7,
-                    Time7: result.recordtime7,
-                    Date8: result.recorddate8,
-                    Time8: result.recordtime8,
-                    Date9: result.recorddate9,
-                    Time9: result.recordtime9,
-                    Date10: result.recorddate10,
-                    Time10: result.recordtime10,
-                    Date11: result.recorddate11,
-                    Time11: result.recordtime11,
-                    Date12: result.recorddate12,
-                    Time12: result.recordtime12,
-                    Date13: result.recorddate13,
-                    Time13: result.recordtime13,
-                    Date14: result.recorddate14,
-                    Time14: result.recordtime14,
-                    Date15: result.recorddate15,
-                    Time15: result.recordtime15,
-                    Date16: result.recorddate16,
-                    Time16: result.recordtime16
 
 
-                })
-            })
+    }); 
 
-            .catch(err => res.status(err.status).json({
-                message: err.message
-            }).json({
-                status: err.status
-            }));
-    })
 
+    router.get('/getparticulardetails', cors(), (req, res) => {
+       if (1 == 1) {
+            
+                        const requestid1 = checkToken(req);
+                        console.log("requestid1", requestid1);
+                        const requestid = requestid1;
+            
+            
+                        getparticulardetails.getparticulardetails(requestid)
+                        .then(function(result) {
+                            console.log("requestid1",requestid1)
+                            console.log("result.query",result.query)
+                              return res.json({
+                                 "status":200,
+                                 "message": result.query
+                             });
+                         })
+                         .catch(err => res.status(err.status).json({
+                             message: err.message
+                         }));
+                 } else {
+                     res.status(401).json({
+                         "status": false,
+                         message: 'cant fetch data !'
+                     });
+                 }
+                });
+
+                router.post('/getHistory',(req,res)=>{
+                    console.log("requ...123>>>ui>>>",req.body);
+                    const userId = req.body.userId;
+                    console.log("userId",userId);
+                    
+
+                           getHistory.getHistory (userId)
+                                .then(result=>{
+                                    console.log("result....123>>>",result);
+                                   res.status(result.status).json({
+                                    result:result.docs,
+
+                                })
+                            })
+                            
+                           .catch(err => res.status(err.status).json({
+                                message: err.message
+                            }).json({
+                                status: err.status
+                            }));
+                        })
+                        
 
     router.post('/savetransaction', cors(), (req, res) => {
         var name = req.body.name;
@@ -407,14 +364,14 @@ module.exports = router => {
 
     router.post('/approveloan', cors(), (req, res) => {
         console.log(req.body)
-        const requestid = req.body.id;
-        console.log(requestid);
+       const userId =req.body.id ;
+        console.log(userId);
         const transactionstring = req.body.transactionstring;
         console.log(transactionstring);
-        console.log("legal..123>>>", transactionstring.legal)
+        console.log("legal..123>>>",transactionstring.legal)
 
-        if (transactionstring.legal == "approved") {
-
+        if (transactionstring.legal =="approved") {
+            
             res
                 .status(200)
                 .json({
@@ -422,27 +379,26 @@ module.exports = router => {
                 });
 
         } else {
-            res
+             res
                 .status(200)
                 .json({
                     message: 'Your Request has been rejected !'
                 });
-        }
+            }
 
         updatetransaction
-            .updatetransaction(requestid, transactionstring)
-            .then(result => {
-                console.log("result....", result)
-
-            })
+        .updatetransaction(userId,transactionstring)
+        .then(result =>  {
+            console.log("result....",result)     
+        
+        })
     });
 
 
     router.get("/readRequest", (req, res) => {
         //    var requestList = [];
 
-        if (checkToken(req)) {
-            
+        if (1 == 1) {
 
             const requestid = checkToken(req);
             console.log("requestid1", requestid);
@@ -471,154 +427,138 @@ module.exports = router => {
 
     router.post('/preclosingUser', cors(), (req, res) => {
 
-        const requestid = req.body.requestid;
-        console.log(requestid);
+                const requestid = req.body.requestid;
+                console.log(requestid);
 
-        const emiremaining = req.body.emiremaining;
-        console.log(emiremaining);
-
-        const penaltyforclosure = req.body.penaltyforclosure;
-        console.log("penalty", penaltyforclosure);
-
-        const installmentpermonth = req.body.installmentpermonth;
-        console.log(installmentpermonth);
-        const documentrequiredforclosing = req.body.documentrequiredforclosing;
-        console.log(documentrequiredforclosing);
-        const paymentmode = req.body.paymentmode;
-        console.log(paymentmode);
-
-        if (!requestid || !emiremaining || !penaltyforclosure || !installmentpermonth || !documentrequiredforclosing || !paymentmode) {
-
-            res
-                .status(400)
-                .json({
-                    message: 'Invalid Request !'
-                });
-
-        } else {
-
-            preclosing
-                .preclosingUser(requestid, emiremaining, penaltyforclosure, installmentpermonth, documentrequiredforclosing, paymentmode)
-                .then(result => {
-
-                    res.send({
-                        "message": "preclosing request accepted",
-                        "status": true,
-
-                    });
-
-
-                })
-                .catch(err => res.status(err.status).json({
-                    message: err.message
-                }))
-        }
-    });
-
-    /*  router.post('/loanscheduleUser', cors(), (req, res) => {
-
-            console.log("ui....123>>>",req.body);
-            const requestid = req.body.requestid;
-            console.log(requestid);
-            const transactionstring = req.body.transactionstring;
-            console.log(transactionstring);
-            
-                     loanschedule
-                         .loanscheduleUser(requestid,transactionstring)
-
-                            .then(result => {
-                                if(!requestid) {
-                                    res
-                                    .status(400)
-                                    .json({
-                                        message: 'Invalid Request !'
-                                    });
-                                } 
-                                else {
-                                updatetransaction
-                                .updatetransaction(requestid,transactionstring)
-                                .then(function(result) {
-                                    console.log("result....",result)                                    
-                                res.send({
-                                    "message": "loanschedule created successfully",
-                                    "status": true,
-            
-                                });
-            
-            
-                            })
-                        
-                            .catch(err => res.status(err.status).json({
-                                message: err.message
-                            }))
-                        }
-                        });
-                    
-                });  */
-
-    router.post('/getloanschedule', cors(), (req, res) => {
-
-        if (checkToken(req)) {
-            
-        console.log(req.body);
-        console.log(req.body.requestid);
-        var requestid = req.body.requestid;
-        getloanschedule
-            .getloanschedule(requestid)
-            .then(function(result) {
-                console.log(result)
-
-                res.send({
-                    status: result.status,
-                    message: result.usr
-                });
-            })
-            .catch(err => res.status(err.status).json({
-                message: err.message
-            }));
-        }
-        else {
-            res.status(401).json({
-                "status": false,
-                message: 'cant fetch data !'
-            });
-        }
-
-    });
-
-    router.get("/getloandetails", cors(), (req, res) => {
-
-
-
-        var startKey = '000';
-        console.log("startKey", startKey);
-        var endKey = '999';
-        console.log("endKey--", endKey);
-
-
-        if (!checkToken(req)) {
-            console.log("invalid token")
-            return res.status(401).json({
-                message: "invalid token"
-            })
-        }
+                const emiremaining = req.body.emiremaining;
+                console.log(emiremaining);
         
-        getloandetails
-            .getloandetails(startKey, endKey)
-            .then(function(result) {
-                console.log("  result.query1234..>>>", result.query);
-                res.status(result.status).json({
-                    message: result.query
-                })
-            })
-            .catch(err => res.status(err.status).json({
-                message: err.message
-            }));
+                const penaltyforclosure = req.body.penaltyforclosure;
+                console.log("penalty",penaltyforclosure);
+        
+                const installmentpermonth = req.body.installmentpermonth;
+                console.log(installmentpermonth);
+                const documentrequiredforclosing = req.body.documentrequiredforclosing;
+                console.log(documentrequiredforclosing);
+                const paymentmode = req.body.paymentmode;
+                console.log(paymentmode);
+        
+                if (!requestid||!emiremaining || !penaltyforclosure || !installmentpermonth || !documentrequiredforclosing || !paymentmode) {
+        
+                    res
+                        .status(400)
+                        .json({
+                            message: 'Invalid Request !'
+                        });
+        
+                } else {
+        
+                    preclosing
+                        .preclosingUser(requestid,emiremaining,penaltyforclosure,installmentpermonth,documentrequiredforclosing,paymentmode)
+                        .then(result => {
+        
+                            res.send({
+                                "message": "preclosing request accepted",
+                                "status": true,
+        
+                            });
+        
+        
+                        })
+                        .catch(err => res.status(err.status).json({
+                            message: err.message
+                        }))
+                }
+            });
 
-    });
+          router.post('/loanscheduleUser', cors(), (req, res) => {
+
+                console.log("ui....123>>>",req.body);
+                const requestid = req.body.requestid;
+                console.log(requestid);
+                const transactionstring = req.body.transactionstring;
+                console.log(transactionstring);
+                
+                         loanschedule
+                             .loanscheduleUser(requestid,transactionstring)
+                                .then(result => {
+                                    if(!requestid) {
+                                        res
+                                        .status(400)
+                                        .json({
+                                            message: 'Invalid Request !'
+                                        });
+                                    } 
+                                    else {
+                                    updatetransaction
+                                    .updatetransaction(requestid,transactionstring)
+                                    .then(function(result) {
+                                        console.log("result....",result)                                    
+                                    res.send({
+                                        "message": "loanschedule created successfully",
+                                        "status": true,
+                
+                                    });
+                
+                
+                                })
+                            
+                                .catch(err => res.status(err.status).json({
+                                    message: err.message
+                                }))
+                            }
+                            });
+                        
+                    }); 
+
+                    router.post('/getloanschedule', cors(), (req, res) => {
+
+                                console.log(req.body);
+                                console.log(req.body.requestid);
+                                var requestid = req.body.requestid;
+                                getloanschedule
+                                    .getloanschedule(requestid)
+                                    .then(function(result) {
+                                        console.log(result)
+                        
+                                        res.send({
+                                            status: result.status,
+                                            message: result.usr
+                                        });
+                                    })
+                                    .catch(err => res.status(err.status).json({
+                                        message: err.message
+                                    }));
+                        
+                        
+                            }); 
+
+                            router.get("/getloandetails", cors(), (req, res) => {
+                                
+                                        
+                                
+                                            var startKey = '000';
+                                            console.log("startKey", startKey);
+                                            var endKey = '999';
+                                            console.log("endKey--", endKey);
+                                
+                                            getloandetails
+                                                .getloandetails(startKey, endKey)
+                                                .then(function(result) {
+
+                                                    console.log("  result.query1234..>>>", result.query);
+                                                    console.log("  result.querykey..>>>", result.query.Key);
+                                                    res.status(result.status).json({message:result.query})
+                                                })
+                                                .catch(err => res.status(err.status).json({
+                                                    message: err.message
+                                                }));
+                                       
+
+                                    });
 
 
-    /* router.post('/creditscore', cors(), (req, res) => {
+                                   /* router.post('/creditscore', cors(), (req, res) => {
                                         console.log("entering in to the update trans",req.body);
 
                                         var body = req.body
@@ -672,40 +612,43 @@ module.exports = router => {
                                             
                                     })
                                         
-                                    }); */
+                                    }); */ 
 
 
-    router.post('/updatetransaction', cors(), (req, res) => {
+   router.post('/updatetransaction', cors(), (req, res) => {
+        
+        console.log("entering in to the update trans.....ui",req.body);
+        
+         var body = req.body
+        var userId = body.id;
+      var transactionstring = body.transactionstring;
+      
+                                                
+  console.log("entering in to the upda trans",userId,transactionstring);
 
-        console.log("entering in to the update trans.....ui", req.body);
+  
 
-        var body = req.body
-        var requestid = body.id;
-        var transactionstring = body.transactionstring;
-        console.log("entering in to the upda trans", requestid, transactionstring);
-
-        if (checkToken(req)) {
-        updatetransaction.updatetransaction(requestid, transactionstring)
-
-
-            .then(result => {
-                if (!requestid) {
-                    res
-                        .status(400)
-                        .json({
-                            message: 'Invalid Request !'
-                        });
-                }
+        updatetransaction.updatetransaction(userId,transactionstring)
+        
+        
+        .then(result => {
+            if(!userId) {
+                res
+                .status(400)
+                .json({
+                    message: 'Invalid Request !'
+                });
+            }
 
                 //console.log(result);
                 else {
-                    res.send({
-                        "message": result.message,
-                        "status": true
+                res.send({
+                    "message": result.message,
+                    "status": true
 
 
-                    });
-                }
+                });
+            }
             })
 
             .catch(err => res.status(err.status).json({
@@ -713,53 +656,51 @@ module.exports = router => {
             }).json({
                 status: err.status
             }));
-        }
-        else {
-            res.status(401).json({
-                "status": false,
-                message: 'cant fetch data !'
-            });
-        }
-    });
+
+    }); 
 
 
 
-    router.get("/readIndex", cors(), (req, res) => {
+     router.get("/readIndex", cors(), (req, res) => {
 
-        if (checkToken(req))  {
-
+          if (1==1) {
+                                            
             readIndex
-                .readIndex({})
-                .then(function(result) {
-                    console.log("result", result);
-                    var firstrequest = result.query[0]
-                    console.log("firstrequest--", firstrequest);
-                    var length = result.query.length;
-                    var lastrequest = result.query[length - 1];
-                    console.log("lastrequest--", lastrequest);
-                    console.log("query", result);
+              .readIndex({})
+                    .then(function(result) {
+                    console.log("result",result);
+                     var firstrequest = result.query[0]
+                       console.log("firstrequest--", firstrequest);
+                       var length = result.query.length;
+                        var lastrequest = result.query[length - 1];
+                          console.log("lastrequest--", lastrequest);
+                          console.log("query",result);
+                                            
+                                       return res.json({
+                                                "status": 200,
+                                                "result": result
+                                                       });
+                                                   })
+                                                .catch(err => res.status(err.status).json({
+                                                     message: err.message
+                                                    }));
+                                                    } else {
+                                                        res
+                                                            .status(401)
+                                                            .json({
+                                                                "status": false,
+                                                                message: 'cant fetch data !'
+                                                            });
+                                                    }
+                                                });
+                                            
 
-                    return res.json({
-                        "status": 200,
-                        "result": result
-                    });
-                })
-                .catch(err => res.status(err.status).json({
-                    message: err.message
-                }));
-        } else {
-            res
-                .status(401)
-                .json({
-                    "status": false,
-                    message: 'cant fetch data !'
-                });
-        }
-    });
+
+            
+
     function checkToken(req) {
 
-        const token = req.headers['x-access-token'];
-        console.log("mytoken......",token)
+        const token = req.headers['authorization'];
 
         if (token) {
 
@@ -774,21 +715,28 @@ module.exports = router => {
         }
     }
 
-}
-
-function checkToken1(req) {
-    
-            const token = req.headers['authorization'];
-    
-            if (token) {
-    
-                try {
-                    (token.length != 0)
-                    return token
-                } catch (err) {
-                    return false;
+    function getrapidID(req) {
+        
+               const token = req.headers['x-access-token'];
+        
+               if (token) {
+        
+                   try {
+        
+                     //  var decoded = jwt.verify(token, config.secret);
+                    
+                        return decoded.register.userId;
+        
+        
+                   } catch (err) {
+        
+                       return false;
+                    }
+        
+               } else {
+        
+                   return false;
                 }
-            } else {
-                return false;
             }
-        }
+
+  }

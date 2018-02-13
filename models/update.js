@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 const updatepageSchema = mongoose.Schema({
     
    // userid: String,
-    requestid: String,
+   userId: String,
     transactionstring : Object
 });
 
