@@ -231,11 +231,11 @@ module.exports = router => {
         console.log("body========>",req.body)
         // const requestid = req.body.requestid;
         // console.log("line number 203----->",requestid);
-        var requestid = "";
-        var possible = "0123456789674736728367382772898366377267489457636736273448732432642326734"
-        for (var i = 0; i < 3; i++)
-            requestid += (possible.charAt(Math.floor(Math.random() * possible.length))).toString();
-        console.log("requestid" + requestid)
+        // var requestid = "";
+        // var possible = "0123456789674736728367382772898366377267489457636736273448732432642326734"
+        // for (var i = 0; i < 3; i++)
+        //     requestid += (possible.charAt(Math.floor(Math.random() * possible.length))).toString();
+        // console.log("requestid" + requestid)
         const userId = req.body.userId;
         console.log("userId",userId);
         var transactionstring =req.body.transactionstring;
@@ -252,7 +252,7 @@ module.exports = router => {
                 console.log(result);
                 res.send({
                     "message": result.message,
-                    "requestid": requestid,
+                    // "requestid": requestid,
                     "status": true
 
 
@@ -316,10 +316,10 @@ module.exports = router => {
                  }
                 });
 
-                router.post('/getHistory',(req,res)=>{
+                router.get('/getHistory',(req,res)=>{
                     console.log("requ...123>>>ui>>>",req.body);
-                    const userId = req.body.userId;
-                    console.log("userId",userId);
+                    const userId = checkToken(req);
+                    console.log("userId", userId);
                     
 
                            getHistory.getHistory (userId)

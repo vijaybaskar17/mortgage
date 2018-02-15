@@ -24,6 +24,7 @@
     "cors": "*",
     "date-and-time": "*",
     "express": "^4.16.2",
+    "fabric-client": "^1.0.3",
     "grpc": "^1.4.1",
     "har-validator": "^5.0.3",
     "heroku-client": "^3.0.3",
