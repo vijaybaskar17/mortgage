@@ -17,6 +17,9 @@ const updatetransaction = require('./functions/updatetransaction');
 const savetransaction = require('./functions/savetransaction');
 const register = require('./models/register');
 const readIndex = require('./functions/readIndex');
+const registeru = require('./functions/registeru')
+//const bcSdk = require('./fabcar/registerUser');
+
 
 var cors = require('cors');
 var mongoose = require('mongoose');
@@ -106,6 +109,7 @@ module.exports = router => {
                     res.send({
                         "message": "user has been registered successfully",
                         "status": true,
+                        
 
 
                     });
@@ -118,6 +122,24 @@ module.exports = router => {
                     status: err.status
                 }));
         }
+    });
+    router.post('/register',cors(),(req,res) =>{
+        var enrollmentID = req.body.enrollmentID;
+        console.log(enrollmentID);
+        registeru.registeru(enrollmentID)
+        .then(result => {
+    //     // bcSdk.savetransaction({ TransactionDetails: newloanpage})
+          console.log("user enrolled");
+    //     bcSdk.register(enrollmentID);
+
+         } )
+        .catch(err => res.status(err.status).json({
+            message: err.message
+        }).json({
+            status: err.status
+        }));
+
+
     });
 
     router.post('/login', cors(), (req, res) => {

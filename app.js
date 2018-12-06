@@ -419,7 +419,21 @@ app.get('/channels', function(req, res) {
 	});
 });*/
 
+// app.get('/channels', function(req, res) {
+// 	logger.debug('================ GET CHANNELS ======================');
+// 	logger.debug('peer: ' + req.query.peer);
+// 	var peer = req.query.peer;
+// 	if (!peer) {
+// 		res.json(getErrorMessage('\'peer\''));
+// 		return;
+// 	}
 
+// 	query.getChannels(peer, req.username, req.orgname)
+// 	.then(function(
+// 		message) {
+// 		res.send(message);
+// 	});
+// });
 
 'use strict';
 
@@ -432,7 +446,9 @@ var cors = require('cors');
 var logger;
 var Promise = require('bluebird');
 var log4js = require('log4js');
+var logger = log4js.getLogger('SampleWebApp');
 var config = require('config');
+
 
 
 const port = process.env.PORT || 8082;
@@ -449,6 +465,21 @@ app.listen(port);
 
 
 console.log(`App Runs on ${port}`);
+app.get('/channels', function(req, res) {
+	logger.debug('================ GET CHANNELS ======================');
+	logger.debug('peer: ' + req.query.peer);
+	var peer = req.query.peer;
+	if (!peer) {
+		res.json(getErrorMessage('\'peer\''));
+		return;
+	}
+
+	query.getChannels(peer, req.username, req.orgname)
+	.then(function(
+		message) {
+		res.send(message);
+	});
+});
 
 
 

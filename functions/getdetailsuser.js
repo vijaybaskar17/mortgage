@@ -17,10 +17,7 @@ exports.getdetailsuser = () => {
                 })
 
             }) 
-
-          
-              
-            .catch(err => {
+                 .catch(err => {
 
                 if (err.code == 11000) {
 
